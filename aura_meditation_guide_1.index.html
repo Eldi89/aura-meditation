@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Routine — Guided Meditation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --border: rgba(255,255,255,0.06);
+    --text: #e8e4dc;
+    --muted: rgba(232,228,220,0.45);
+    --accent: #c8a96e;
+    --chakra: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: background 3s ease;
+  }
+
+  .ambient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 20%, var(--glow-color, rgba(200,169,110,0.08)) 0%, transparent 70%);
+    transition: all 3s ease;
+  }
+
+  /* Stars */
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    opacity: var(--op, 0.3);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--op, 0.3); }
+    50% { opacity: 0.05; }
+  }
+
+  /* Layout */
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.3s;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 6vw, 42px);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+
+  .header p {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Start screen */
+  #start-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.6s;
+    width: 100%;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .info-card .val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .info-card .lbl {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .start-btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .start-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .start-btn:hover::before { opacity: 0.1; }
+  .start-btn:hover { box-shadow: 0 0 30px rgba(200,169,110,0.2); }
+  .start-btn span { position: relative; z-index: 1; }
+
+  /* Session screen */
+  #session-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+  }
+
+  /* Progress */
+  .progress-bar {
+    width: 100%;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 1s linear;
+    width: 0%;
+  }
+
+  .step-indicator {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Main circle */
+  .circle-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .circle-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .circle-ring-2 {
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .circle-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .circle-track {
+    fill: none;
+    stroke: rgba(255,255,255,0.05);
+    stroke-width: 2;
+  }
+
+  .circle-progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+    transition: stroke-dashoffset 1s linear, stroke 3s ease;
+  }
+
+  .circle-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .timer-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .timer-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Chakra badge */
+  .chakra-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 20px;
+    transition: all 1.5s ease;
+  }
+
+  .chakra-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: background 1.5s ease, box-shadow 1.5s ease;
+    flex-shrink: 0;
+  }
+
+  .chakra-name {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Instruction card */
+  .instruction-card {
+    width: 100%;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+  }
+
+  .instruction-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--line-color, var(--accent));
+    transition: background 1.5s ease;
+  }
+
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .step-subtitle {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .instruction-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.7;
+    color: rgba(232,228,220,0.85);
+    min-height: 80px;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Mantra display */
+  .mantra-display {
+    text-align: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mantra-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--chakra-color, var(--accent));
+    animation: mantraPulse 4s ease-in-out infinite;
+    transition: color 1.5s ease;
+    display: block;
+  }
+
+  .mantra-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  @keyframes mantraPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Visualize pill */
+  .visualize-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+  }
+
+  .visualize-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: breathe 4s ease-in-out infinite;
+    transition: background 1.5s ease;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 1; }
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .ctrl-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .ctrl-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .play-btn {
+    background: var(--accent);
+    border: none;
+    color: #080c10;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 30px rgba(200,169,110,0.25);
+  }
+
+  .play-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(200,169,110,0.4);
+  }
+
+  /* Next step preview */
+  .next-preview {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    opacity: 0.6;
+  }
+
+  .next-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .next-text {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .next-text strong {
+    color: rgba(232,228,220,0.6);
+    font-weight: 400;
+  }
+
+  /* Complete screen */
+  #complete-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+
+  .complete-icon {
+    font-size: 48px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .complete-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .complete-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 360px;
+  }
+
+  .restart-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+  }
+
+  .restart-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Gong animation */
+  .gong-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .gong-ring {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    animation: gongExpand 1.5s ease-out forwards;
+  }
+
+  @keyframes gongExpand {
+    0% { transform: scale(0.3); opacity: 0.8; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" id="ambient"></div>
+<div class="stars" id="stars"></div>
+<div class="gong-overlay" id="gong-overlay"><div class="gong-ring"></div></div>
+
+<div class="container">
+  <div class="header">
+    <h1>Aura Routine</h1>
+    <p>Chakra Mudra Meditation — Miami Beach</p>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="val">40</div>
+        <div class="lbl">Minutes</div>
+      </div>
+      <div class="info-card">
+        <div class="val">9</div>
+        <div class="lbl">Steps</div>
+      </div>
+      <div class="info-card">
+        <div class="val">7</div>
+        <div class="lbl">Chakras</div>
+      </div>
+      <div class="info-card">
+        <div class="val">Phase 1</div>
+        <div class="lbl">Rebalancing</div>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startSession()"><span>Begin Session</span></button>
+  </div>
+
+  <!-- SESSION SCREEN -->
+  <div id="session-screen">
+    <div style="width:100%">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="step-indicator" id="step-indicator" style="margin-top:10px">Step 1 of 9</div>
+    </div>
+
+    <div class="circle-container">
+      <div class="circle-ring"></div>
+      <div class="circle-ring-2"></div>
+      <svg class="circle-svg" viewBox="0 0 200 200">
+        <circle class="circle-track" cx="100" cy="100" r="90"/>
+        <circle class="circle-progress" id="circle-progress" cx="100" cy="100" r="90"/>
+      </svg>
+      <div class="circle-inner">
+        <div class="timer-display" id="timer-display">2:00</div>
+        <div class="timer-label">remaining</div>
+      </div>
+    </div>
+
+    <div class="chakra-badge" id="chakra-badge">
+      <div class="chakra-dot" id="chakra-dot"></div>
+      <div class="chakra-name" id="chakra-name">Preparation</div>
+    </div>
+
+    <div class="instruction-card" id="instruction-card">
+      <div class="step-title" id="step-title">Settle & Ground</div>
+      <div class="step-subtitle" id="step-subtitle">PREPARATION</div>
+      <div class="instruction-text" id="instruction-text"></div>
+      <div class="mantra-display" id="mantra-display" style="display:none">
+        <span class="mantra-word" id="mantra-word">LAM</span>
+        <div class="mantra-label">Repeat silently on each exhale</div>
+      </div>
+      <div class="visualize-pill" id="visualize-pill" style="display:none">
+        <div class="visualize-dot" id="visualize-dot"></div>
+        <span id="visualize-text">Visualize red light</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="prevStep()" title="Previous">&#8592;</button>
+      <button class="play-btn" id="play-btn" onclick="togglePause()">&#9646;&#9646;</button>
+      <button class="ctrl-btn" onclick="nextStep()" title="Next">&#8594;</button>
+    </div>
+
+    <div class="next-preview" id="next-preview">
+      <div class="next-dot"></div>
+      <div class="next-text">Up next: <strong id="next-text">Nadi Shodhana Breathing</strong></div>
+    </div>
+  </div>
+
+  <!-- COMPLETE SCREEN -->
+  <div id="complete-screen">
+    <div class="complete-icon">🙏</div>
+    <div class="complete-title">Session Complete</div>
+    <div class="complete-sub">Your aura has been cleansed and rebalanced.<br>Carry this stillness with you through the day.<br><br><em>Day 1 of 21 complete.</em></div>
+    <button class="restart-btn" onclick="restart()">Begin Again</button>
+  </div>
+</div>
+
+<script>
+// ── STEPS DATA ──────────────────────────────────────────────────────────────
+const steps = [
+  {
+    title: "Settle & Ground",
+    subtitle: "PREPARATION",
+    duration: 120,
+    chakra: "Preparation",
+    chakraColor: "#c8a96e",
+    glowColor: "rgba(200,169,110,0.12)",
+    lineColor: "#c8a96e",
+    mantra: null,
+    visualize: null,
+    instructions: [
+      "Sit cross-legged on your mat, or on the edge of a chair with feet flat on the floor.",
+      "Lengthen your spine — imagine a golden thread pulling the crown of your head toward the sky.",
+      "Soften your shoulders down and back. Let your jaw unclench.",
+      "Rest your hands on your knees, palms facing upward.",
+      "Close your eyes. Take three natural breaths. Simply arrive here.",
+      "With each exhale, let the day dissolve. There is nowhere else to be.",
+      "Notice the ground beneath you. Feel supported, stable, held.",
+    ]
+  },
+  {
+    title: "Nadi Shodhana",
+    subtitle: "ALTERNATE NOSTRIL BREATHING — 10 ROUNDS",
+    duration: 600,
+    chakra: "Breath",
+    chakraColor: "#a8c4d4",
+    glowColor: "rgba(168,196,212,0.1)",
+    lineColor: "#a8c4d4",
+    mantra: null,
+    visualize: null,
+    instructions: [
+      "Raise your right hand to your face. Rest your index and middle fingers gently between your eyebrows.",
+      "Your thumb hovers over the right nostril. Your ring finger hovers over the left.",
+      "Close the right nostril with your thumb. Inhale slowly through the LEFT for 4 counts.",
+      "Close both nostrils. Hold the breath for 4 counts. Feel the stillness.",
+      "Release the thumb. Exhale slowly through the RIGHT nostril for 6 counts.",
+      "Inhale through the RIGHT for 4 counts. Hold both closed for 4. Exhale through the LEFT for 6.",
+      "That is one complete round. Continue for 10 rounds at this slow, steady rhythm.",
+      "Feel your left and right channels coming into balance. The mind grows quieter with each round.",
+    ]
+  },
+  {
+    title: "Gyan Mudra",
+    subtitle: "ROOT CHAKRA — MULADHARA",
+    duration: 180,
+    chakra: "Root Chakra",
+    chakraColor: "#E74C3C",
+    glowColor: "rgba(231,76,60,0.15)",
+    lineColor: "#E74C3C",
+    mantra: "LAM",
+    visualize: "Deep red light at the base of your spine",
+    instructions: [
+      "Touch the tip of your index finger to the tip of your thumb — like a gentle O. Both hands the same.",
+      "Let the other three fingers extend naturally, soft and relaxed.",
+      "Rest both hands on your knees, palms facing upward toward the sky.",
+      "Feel the weight of your body. The solidity of the earth beneath you.",
+      "With each inhale, draw red light up from the earth into the base of your spine.",
+      "With each exhale, whisper or think: LAM. Feel it vibrate at the very base of your body.",
+      "Intention: I am restoring what is already mine. I am grounded. I am safe.",
+    ]
+  },
+  {
+    title: "Shakti Mudra",
+    subtitle: "SACRAL CHAKRA — SVADHISTHANA",
+    duration: 180,
+    chakra: "Sacral Chakra",
+    chakraColor: "#E67E22",
+    glowColor: "rgba(230,126,34,0.15)",
+    lineColor: "#E67E22",
+    mantra: "VAM",
+    visualize: "Warm orange glow below your belly button",
+    instructions: [
+      "Bring both hands together in your lap, just below the navel.",
+      "Interlace your ring fingers and pinky fingers together gently.",
+      "Tuck both thumbs inside, pressing lightly against your palms.",
+      "Let your index and middle fingers point forward together, softly.",
+      "Feel warmth gathering in your lower abdomen — your center of creativity and flow.",
+      "With each exhale: VAM. Let the sound dissolve any stiffness or resistance in this area.",
+      "Intention: My vital energy is returning. I am alive, fluid, creative.",
+    ]
+  },
+  {
+    title: "Rudra Mudra",
+    subtitle: "SOLAR PLEXUS — MANIPURA",
+    duration: 180,
+    chakra: "Solar Plexus",
+    chakraColor: "#F1C40F",
+    glowColor: "rgba(241,196,15,0.15)",
+    lineColor: "#F1C40F",
+    mantra: "RAM",
+    visualize: "Bright yellow sunlight radiating from your stomach",
+    instructions: [
+      "Bring the tips of your thumb, index finger, and ring finger together on both hands.",
+      "Your middle finger and pinky remain straight and extended.",
+      "Hold both hands at navel height, elbows softly bent.",
+      "Feel a warmth building at your solar plexus — your center of power and will.",
+      "With each inhale, the yellow light grows brighter, stronger, more confident.",
+      "With each exhale: RAM. Feel the vibration strengthen your core.",
+      "Intention: I recover my strength. My personal power is restored and clear.",
+    ]
+  },
+  {
+    title: "Padma Mudra",
+    subtitle: "HEART CHAKRA — ANAHATA ★ MOST IMPORTANT",
+    duration: 300,
+    chakra: "Heart Chakra",
+    chakraColor: "#27AE60",
+    glowColor: "rgba(39,174,96,0.18)",
+    lineColor: "#27AE60",
+    mantra: "YAM",
+    visualize: "Emerald green light expanding gently from your chest",
+    instructions: [
+      "Press the base of both palms together — wrists touching, thumbs and pinkies touching.",
+      "Spread all your other fingers wide open, like a lotus flower blooming at your heart.",
+      "Hold this shape at the center of your chest. Feel its openness.",
+      "This is the aura expander. Stay here longer than any other mudra.",
+      "With each inhale, the green light at your heart grows larger, softer, more luminous.",
+      "With each exhale: YAM. Let it release anything heavy or contracted.",
+      "Intention: I open. I release the weight I have been carrying. My aura is filled with light.",
+    ]
+  },
+  {
+    title: "Throat Mudra",
+    subtitle: "THROAT CHAKRA — VISHUDDHA",
+    duration: 180,
+    chakra: "Throat Chakra",
+    chakraColor: "#2980B9",
+    glowColor: "rgba(41,128,185,0.15)",
+    lineColor: "#2980B9",
+    mantra: "HAM",
+    visualize: "Clear blue sky light at your throat",
+    instructions: [
+      "Interlace all your fingers together, except the thumbs.",
+      "Both thumbs point straight upward, pressing gently side by side.",
+      "Hold the shape in front of your throat, elbows relaxed.",
+      "Soften the muscles of your jaw, your neck, your face. Let everything release.",
+      "The throat holds so much — unsaid words, swallowed emotions. Let this mudra open that space.",
+      "With each exhale: HAM. Feel your throat vibrate with clear blue light.",
+      "Intention: I express freely. My voice, my truth, flows with ease.",
+    ]
+  },
+  {
+    title: "Kalesvara Mudra",
+    subtitle: "THIRD EYE — AJNA",
+    duration: 180,
+    chakra: "Third Eye",
+    chakraColor: "#8E44AD",
+    glowColor: "rgba(142,68,173,0.15)",
+    lineColor: "#8E44AD",
+    mantra: "OM",
+    visualize: "Deep indigo pulse between your eyebrows",
+    instructions: [
+      "Touch the tips of both middle fingers together. Touch the first knuckles of your index fingers.",
+      "Both thumbs point toward you and touch each other — forming a diamond or heart shape.",
+      "Curl the remaining fingers gently inward. Hold this shape at forehead level, not touching.",
+      "Direct your inner gaze — with eyes still closed — toward the point between your eyebrows.",
+      "You may see a soft pulsing light here. Do not chase it. Simply observe.",
+      "With each exhale: OM. Feel the vibration resonate precisely at the third eye.",
+      "Intention: My mind is clear. My intuition is awake. I see what is true.",
+    ]
+  },
+  {
+    title: "Crown Mudra",
+    subtitle: "CROWN CHAKRA — SAHASRARA",
+    duration: 180,
+    chakra: "Crown Chakra",
+    chakraColor: "#9B59B6",
+    glowColor: "rgba(155,89,182,0.12)",
+    lineColor: "#BDC3C7",
+    mantra: "AUM",
+    visualize: "Pure white light entering from above, flowing through your entire body",
+    instructions: [
+      "Raise both hands above your head. Turn your palms to face the sky.",
+      "Let your fingers open and relax — slightly spread, completely soft.",
+      "Elbows gently bent. Shoulders dropped. Arms like a wide, open vessel.",
+      "Feel the space above the crown of your head — open, vast, receptive.",
+      "With each inhale, receive pure white light from above. It enters through the crown.",
+      "With each exhale: AUM — Aaah... Uuuh... Mmmm. Hold the M until the vibration fades.",
+      "In the silence after each AUM — stay. That silence is the most sacred moment.",
+      "Intention: I am complete. I am connected to something larger than myself.",
+    ]
+  },
+];
+
+// Seal step appended at end
+steps.push({
+  title: "Anjali Mudra",
+  subtitle: "CLOSING SEAL",
+  duration: 120,
+  chakra: "Seal",
+  chakraColor: "#c8a96e",
+  glowColor: "rgba(200,169,110,0.1)",
+  lineColor: "#c8a96e",
+  mantra: null,
+  visualize: null,
+  instructions: [
+    "Press both palms together at your heart. Fingers pointing upward.",
+    "Let your thumbs rest lightly against your sternum.",
+    "Bow your head gently forward. Close your eyes completely.",
+    "This gesture seals everything you have built today.",
+    "Sit here for two full minutes. Do not rush. The integration is happening now.",
+    "Your field is recalibrated. Your aura is restored. Carry this stillness with you.",
+    "When you are ready — slowly open your eyes. Take one long breath. You are complete.",
+  ]
+});
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentStep = 0;
+let timeLeft = 0;
+let totalTime = 0;
+let isPaused = false;
+let timer = null;
+let instructionIndex = 0;
+let instructionTimer = null;
+let totalSessionTime = steps.reduce((a, s) => a + s.duration, 0);
+let elapsedTotal = 0;
+
+// ── STARS ─────────────────────────────────────────────────────────────────────
+function createStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    star.style.setProperty('--op', (0.1 + Math.random() * 0.4).toFixed(2));
+    star.style.animationDelay = (Math.random() * 4) + 's';
+    if (Math.random() > 0.7) { star.style.width = '3px'; star.style.height = '3px'; }
+    container.appendChild(star);
+  }
+}
+
+// ── GONG ──────────────────────────────────────────────────────────────────────
+function playGong() {
+  const overlay = document.getElementById('gong-overlay');
+  overlay.style.opacity = '1';
+  overlay.innerHTML = '<div class="gong-ring"></div>';
+  setTimeout(() => { overlay.style.opacity = '0'; }, 1500);
+
+  // Web Audio gong sound
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(180, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 2);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 3);
+  } catch(e) {}
+}
+
+// ── FORMAT TIME ───────────────────────────────────────────────────────────────
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+// ── UPDATE UI ─────────────────────────────────────────────────────────────────
+function updateUI() {
+  const step = steps[currentStep];
+
+  // Ambient
+  document.getElementById('ambient').style.setProperty('--glow-color', step.glowColor);
+  document.querySelector('.ambient').style.background = '';
+
+  // Timer
+  document.getElementById('timer-display').textContent = formatTime(timeLeft);
+
+  // Circle progress
+  const pct = 1 - (timeLeft / totalTime);
+  const circ = 2 * Math.PI * 90;
+  document.getElementById('circle-progress').style.strokeDashoffset = circ - (pct * circ);
+  document.getElementById('circle-progress').style.stroke = step.chakraColor;
+
+  // Step indicator
+  document.getElementById('step-indicator').textContent = `Step ${currentStep + 1} of ${steps.length}`;
+
+  // Progress bar
+  const totalElapsed = steps.slice(0, currentStep).reduce((a, s) => a + s.duration, 0) + (totalTime - timeLeft);
+  const pctTotal = (totalElapsed / totalSessionTime) * 100;
+  document.getElementById('progress-fill').style.width = pctTotal + '%';
+
+  // Chakra badge
+  document.getElementById('chakra-dot').style.background = step.chakraColor;
+  document.getElementById('chakra-dot').style.boxShadow = `0 0 8px ${step.chakraColor}`;
+  document.getElementById('chakra-name').textContent = step.chakra;
+
+  // Instruction card
+  document.getElementById('step-title').textContent = step.title;
+  document.getElementById('step-subtitle').textContent = step.subtitle;
+  document.querySelector('.instruction-card').style.setProperty('--line-color', step.lineColor);
+
+  // Mantra
+  const mantraEl = document.getElementById('mantra-display');
+  if (step.mantra) {
+    mantraEl.style.display = 'block';
+    document.getElementById('mantra-word').textContent = step.mantra;
+    document.getElementById('mantra-word').style.color = step.chakraColor;
+  } else {
+    mantraEl.style.display = 'none';
+  }
+
+  // Visualize
+  const vizEl = document.getElementById('visualize-pill');
+  if (step.visualize) {
+    vizEl.style.display = 'inline-flex';
+    document.getElementById('visualize-text').textContent = step.visualize;
+    document.getElementById('visualize-dot').style.background = step.chakraColor;
+    document.getElementById('visualize-dot').style.boxShadow = `0 0 6px ${step.chakraColor}`;
+  } else {
+    vizEl.style.display = 'none';
+  }
+
+  // Next preview
+  if (currentStep < steps.length - 1) {
+    document.getElementById('next-text').textContent = steps[currentStep + 1].title;
+    document.getElementById('next-preview').style.display = 'flex';
+  } else {
+    document.getElementById('next-preview').style.display = 'none';
+  }
+}
+
+function cycleInstruction() {
+  const step = steps[currentStep];
+  const el = document.getElementById('instruction-text');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = step.instructions[instructionIndex % step.instructions.length];
+    el.style.opacity = '1';
+    instructionIndex++;
+  }, 500);
+}
+
+// ── SESSION CONTROL ───────────────────────────────────────────────────────────
+function startStep(index) {
+  clearInterval(timer);
+  clearInterval(instructionTimer);
+  currentStep = index;
+  const step = steps[index];
+  timeLeft = step.duration;
+  totalTime = step.duration;
+  instructionIndex = 0;
+
+  updateUI();
+  cycleInstruction();
+
+  const instrInterval = Math.max(5000, Math.floor(step.duration / step.instructions.length) * 1000);
+  instructionTimer = setInterval(cycleInstruction, instrInterval);
+
+  timer = setInterval(() => {
+    if (!isPaused) {
+      timeLeft--;
+      updateUI();
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        clearInterval(instructionTimer);
+        playGong();
+        setTimeout(() => {
+          if (currentStep < steps.length - 1) {
+            startStep(currentStep + 1);
+          } else {
+            showComplete();
+          }
+        }, 1800);
+      }
+    }
+  }, 1000);
+}
+
+function startSession() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('session-screen').style.display = 'flex';
+  startStep(0);
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('play-btn').innerHTML = isPaused ? '&#9654;' : '&#9646;&#9646;';
+}
+
+function nextStep() {
+  if (currentStep < steps.length - 1) {
+    playGong();
+    setTimeout(() => startStep(currentStep + 1), 500);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    startStep(currentStep - 1);
+  }
+}
+
+function showComplete() {
+  document.getElementById('session-screen').style.display = 'none';
+  const c = document.getElementById('complete-screen');
+  c.style.display = 'flex';
+}
+
+function restart() {
+  document.getElementById('complete-screen').style.display = 'none';
+  document.getElementById('session-screen').style.display = 'flex';
+  startStep(0);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+createStars();
+</script>
+</body>
+</html>
