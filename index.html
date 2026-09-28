@@ -2,1108 +2,1016 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aura Routine — Guided Meditation</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aura Routine</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aura">
+<meta name="theme-color" content="#07090F">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080c10;
-    --surface: #0d1117;
-    --border: rgba(255,255,255,0.06);
-    --text: #e8e4dc;
-    --muted: rgba(232,228,220,0.45);
-    --accent: #c8a96e;
-    --chakra: #ffffff;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Jost', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
-
-  /* Ambient background */
-  .ambient {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    transition: background 3s ease;
-  }
-
-  .ambient::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 20%, var(--glow-color, rgba(200,169,110,0.08)) 0%, transparent 70%);
-    transition: all 3s ease;
-  }
-
-  /* Stars */
-  .stars {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    animation: twinkle var(--dur, 3s) ease-in-out infinite;
-    opacity: var(--op, 0.3);
-  }
-
-  @keyframes twinkle {
-    0%, 100% { opacity: var(--op, 0.3); }
-    50% { opacity: 0.05; }
-  }
-
-  /* Layout */
-  .container {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 680px;
-    padding: 40px 24px 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 32px;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    opacity: 0;
-    animation: fadeUp 1.2s ease forwards 0.3s;
-  }
-
-  .header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(28px, 6vw, 42px);
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    line-height: 1.1;
-  }
-
-  .header p {
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Start screen */
-  #start-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
-    opacity: 0;
-    animation: fadeUp 1.2s ease forwards 0.6s;
-    width: 100%;
-  }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .info-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-  }
-
-  .info-card .val {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px;
-    font-weight: 300;
-    color: var(--accent);
-  }
-
-  .info-card .lbl {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .start-btn {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Jost', sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    padding: 18px 48px;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .start-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .start-btn:hover::before { opacity: 0.1; }
-  .start-btn:hover { box-shadow: 0 0 30px rgba(200,169,110,0.2); }
-  .start-btn span { position: relative; z-index: 1; }
-
-  /* Session screen */
-  #session-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
-    width: 100%;
-  }
-
-  /* Progress */
-  .progress-bar {
-    width: 100%;
-    height: 2px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 1s linear;
-    width: 0%;
-  }
-
-  .step-indicator {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: center;
-  }
-
-  /* Main circle */
-  .circle-container {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .circle-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .circle-ring-2 {
-    position: absolute;
-    inset: 16px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-
-  .circle-svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
-  }
-
-  .circle-track {
-    fill: none;
-    stroke: rgba(255,255,255,0.05);
-    stroke-width: 2;
-  }
-
-  .circle-progress {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-dasharray: 565;
-    stroke-dashoffset: 565;
-    transition: stroke-dashoffset 1s linear, stroke 3s ease;
-  }
-
-  .circle-inner {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .timer-display {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 52px;
-    font-weight: 300;
-    line-height: 1;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-
-  .timer-label {
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* Chakra badge */
-  .chakra-badge {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 8px 20px;
-    transition: all 1.5s ease;
-  }
-
-  .chakra-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    transition: background 1.5s ease, box-shadow 1.5s ease;
-    flex-shrink: 0;
-  }
-
-  .chakra-name {
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* Instruction card */
-  .instruction-card {
-    width: 100%;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-    min-height: 200px;
-  }
-
-  .instruction-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--line-color, var(--accent));
-    transition: background 1.5s ease;
-  }
-
-  .step-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--text);
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .step-subtitle {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  .instruction-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 300;
-    font-style: italic;
-    line-height: 1.7;
-    color: rgba(232,228,220,0.85);
-    min-height: 80px;
-    transition: opacity 0.5s ease;
-  }
-
-  /* Mantra display */
-  .mantra-display {
-    text-align: center;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .mantra-word {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 300;
-    letter-spacing: 0.3em;
-    color: var(--chakra-color, var(--accent));
-    animation: mantraPulse 4s ease-in-out infinite;
-    transition: color 1.5s ease;
-    display: block;
-  }
-
-  .mantra-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  @keyframes mantraPulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-
-  /* Visualize pill */
-  .visualize-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 8px 16px;
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--muted);
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 14px;
-  }
-
-  .visualize-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: breathe 4s ease-in-out infinite;
-    transition: background 1.5s ease;
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); opacity: 0.7; }
-    50% { transform: scale(1.4); opacity: 1; }
-  }
-
-  /* Controls */
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .ctrl-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: all 0.3s ease;
-  }
-
-  .ctrl-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .play-btn {
-    background: var(--accent);
-    border: none;
-    color: #080c10;
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 30px rgba(200,169,110,0.25);
-  }
-
-  .play-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(200,169,110,0.4);
-  }
-
-  /* Next step preview */
-  .next-preview {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    opacity: 0.6;
-  }
-
-  .next-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--muted);
-    flex-shrink: 0;
-  }
-
-  .next-text {
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
-
-  .next-text strong {
-    color: rgba(232,228,220,0.6);
-    font-weight: 400;
-  }
-
-  /* Complete screen */
-  #complete-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    text-align: center;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
-  }
-
-  .complete-icon {
-    font-size: 48px;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  .complete-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 36px;
-    font-weight: 300;
-    color: var(--accent);
-  }
-
-  .complete-sub {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.8;
-    max-width: 360px;
-  }
-
-  .restart-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'Jost', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 14px 32px;
-    border-radius: 100px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 8px;
-  }
-
-  .restart-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Gong animation */
-  .gong-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-  }
-
-  .gong-ring {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-    animation: gongExpand 1.5s ease-out forwards;
-  }
-
-  @keyframes gongExpand {
-    0% { transform: scale(0.3); opacity: 0.8; }
-    100% { transform: scale(3); opacity: 0; }
-  }
+/* Layout: one-column phone app. Home scrolls; the session is a single fixed screen tinted by the active chakra. */
+:root{
+  --night:#07090F;
+  --deep:#0D1220;
+  --ink:#EDE6D9;
+  --mute:rgba(237,230,217,.58);
+  --faint:rgba(237,230,217,.30);
+  --line:rgba(237,230,217,.09);
+  --glass:rgba(237,230,217,.04);
+  --gold:#D6B27A;
+  --c:#D6B27A;
+  --display:'Cormorant Garamond','Iowan Old Style',Georgia,serif;
+  --body:'Jost','Avenir Next','Helvetica Neue',Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--night);color:var(--ink);font-family:var(--body);font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--c);outline-offset:3px;border-radius:10px}
+
+.sky{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(110% 60% at 50% -8%, color-mix(in srgb,var(--c) 26%,transparent), transparent 62%),
+             radial-gradient(90% 45% at 50% 108%, rgba(52,78,140,.22), transparent 70%)}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.25;animation:tw 4s ease-in-out infinite}
+@keyframes tw{50%{opacity:.04}}
+
+.screen{position:relative;z-index:1;max-width:520px;margin:0 auto;padding-inline:18px;
+  padding-block:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 24px)}
+[hidden]{display:none!important}
+
+/* ---------- type ---------- */
+.eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);font-weight:400}
+.serif{font-family:var(--display)}
+h1.brand{font-family:var(--display);font-weight:300;font-size:46px;line-height:1;color:var(--gold);letter-spacing:.02em}
+h1.brand em{font-style:italic}
+h2.sec{font-family:var(--display);font-weight:400;font-size:22px;color:var(--ink);text-wrap:balance}
+
+/* ---------- home ---------- */
+#home{display:flex;flex-direction:column;gap:22px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.dayCard{border:1px solid var(--line);background:var(--glass);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.dayTop{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.dayBig{font-family:var(--display);font-size:30px;font-weight:400}
+.dayBig span{color:var(--gold)}
+.dots{display:grid;grid-template-columns:repeat(21,1fr);gap:4px}
+.dots i{aspect-ratio:1;border-radius:50%;background:rgba(237,230,217,.1);display:block;max-width:100%}
+.dots i.on{background:var(--gold);box-shadow:0 0 8px rgba(214,178,122,.6)}
+.dots i.today{outline:1.5px solid var(--gold);outline-offset:1px}
+.dayNote{font-size:13px;color:var(--mute);line-height:1.5}
+
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mode{border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:3px;transition:border-color .3s,background .3s}
+.mode b{font-weight:500;font-size:14px}
+.mode small{font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums}
+.mode.on{border-color:var(--gold);background:rgba(214,178,122,.08)}
+.mode .rec{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);min-height:11px}
+
+.seq{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:100px;padding:6px 11px 6px 9px;font-size:12px;color:var(--mute)}
+.chip i{width:8px;height:8px;border-radius:50%;display:block}
+
+.cta{display:flex;flex-direction:column;gap:10px}
+.btnMain{background:var(--gold);color:#1A140B;border-radius:100px;padding:17px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;font-size:13px;box-shadow:0 0 34px rgba(214,178,122,.25)}
+.btnMain:active{transform:scale(.98)}
+.btnGhost{border:1px solid var(--line);border-radius:100px;padding:13px;font-size:13px;color:var(--mute);letter-spacing:.1em}
+
+.lib{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border:1px solid var(--line);border-radius:16px;padding:10px 10px 12px;text-align:left;display:flex;flex-direction:column;gap:6px;background:var(--glass);position:relative;overflow:hidden}
+.tile svg{width:100%;height:auto;aspect-ratio:300/230;display:block}
+.tile b{font-family:var(--display);font-weight:500;font-size:17px}
+.tile small{font-size:11px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.tile small i{width:7px;height:7px;border-radius:50%;display:block}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 30%, color-mix(in srgb,var(--tc) 16%,transparent), transparent 70%);pointer-events:none}
+
+.set{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.row .t b{font-weight:400;font-size:14px}
+.row .t small{font-size:11.5px;color:var(--mute);line-height:1.4}
+.sw{width:46px;height:28px;border-radius:20px;background:rgba(237,230,217,.14);position:relative;flex-shrink:0;transition:background .25s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .25s}
+.sw[aria-checked="true"]{background:var(--gold)}
+.sw[aria-checked="true"]::after{transform:translateX(18px)}
+.test{font-size:12px;color:var(--gold);letter-spacing:.08em;border:1px solid rgba(214,178,122,.4);border-radius:100px;padding:6px 12px;flex-shrink:0}
+.foot{font-size:12px;color:var(--faint);text-align:center;line-height:1.6;font-family:var(--display);font-style:italic;font-size:14px}
+
+/* ---------- session ---------- */
+#session{display:flex;flex-direction:column;gap:10px;min-height:100%;position:relative}
+.sTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.iconBtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--mute);font-size:15px;flex-shrink:0}
+.sMeta{text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);font-variant-numeric:tabular-nums}
+.sMeta b{color:var(--ink);font-weight:400}
+.endHint{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 60px);font-size:11px;color:var(--c);letter-spacing:.1em;text-align:center;pointer-events:none}
+.segs{display:flex;gap:3px;height:5px}
+.seg{border-radius:3px;background:rgba(237,230,217,.1);overflow:hidden;position:relative}
+.seg i{position:absolute;inset:0;width:0;background:var(--sc);display:block;opacity:.9}
+
+.visual{display:grid;grid-template-columns:34% 1fr;gap:8px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));padding:8px;position:relative}
+.visual svg{width:100%;height:auto;display:block}
+.vFig{border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px;padding-right:6px}
+.vLab{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);text-align:center}
+.replay{position:absolute;right:10px;top:10px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);color:var(--mute);font-size:14px;display:grid;place-items:center;background:rgba(7,9,15,.5)}
+
+.stepHead{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.stepTitle{font-family:var(--display);font-size:28px;font-weight:400;line-height:1.05;text-wrap:balance}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.badge i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);display:block}
+
+.pacer{position:relative;width:min(44vw,172px);aspect-ratio:1;margin:2px auto 0;max-width:100%}
+.pacer svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.orb{position:absolute;inset:16%;border-radius:50%;
+  background:radial-gradient(circle at 50% 42%, color-mix(in srgb,var(--c) 70%,#fff 30%) 0%, color-mix(in srgb,var(--c) 55%,transparent) 38%, color-mix(in srgb,var(--c) 10%,transparent) 70%, transparent 72%);
+  transform:scale(.6);will-change:transform;filter:saturate(1.1)}
+.orbText{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;pointer-events:none}
+.phase{font-family:var(--display);font-size:22px;font-weight:500;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.phase em{font-style:normal;color:#fff}
+.count{font-size:12px;color:var(--ink);opacity:.8;font-variant-numeric:tabular-nums;letter-spacing:.1em;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.stepTime{font-size:12px;color:var(--mute);letter-spacing:.14em;text-align:center;font-variant-numeric:tabular-nums}
+
+.mantraRow{display:flex;justify-content:center;gap:14px;align-items:center;flex-wrap:wrap;margin-top:-2px}
+.mantra{font-family:var(--display);font-size:24px;line-height:1;letter-spacing:.32em;color:var(--c);padding-left:.32em}
+.viz{font-family:var(--display);font-style:italic;font-size:15px;color:var(--mute);text-align:center;line-height:1.4;text-wrap:balance}
+
+.teach{border:1px solid var(--line);border-radius:16px;padding:12px 16px;min-height:66px;display:flex;align-items:center;background:var(--glass);position:relative}
+.teach::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:2px;border-radius:2px;background:var(--c);opacity:.7}
+.teach p{font-family:var(--display);font-size:17px;line-height:1.4;font-style:italic;transition:opacity .5s}
+
+.controls{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:2px}
+.ctl{width:50px;height:50px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--mute);font-size:17px}
+.play{width:66px;height:66px;border-radius:50%;background:var(--c);color:#0B0D14;display:grid;place-items:center;font-size:20px;box-shadow:0 0 30px color-mix(in srgb,var(--c) 45%,transparent);transition:background 1.2s}
+.next{display:flex;align-items:center;gap:10px;justify-content:center;font-size:12px;color:var(--faint)}
+.next i{width:7px;height:7px;border-radius:50%;display:block}
+
+/* ---------- done ---------- */
+#done{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding-top:12vh}
+.lotus{width:120px;height:120px}
+.doneTitle{font-family:var(--display);font-size:40px;font-weight:300;color:var(--gold)}
+.doneSub{font-size:14px;color:var(--mute);line-height:1.7;max-width:340px}
+#done .dots{width:100%;max-width:360px}
+
+/* ---------- sheet ---------- */
+.veil{position:fixed;inset:0;background:rgba(3,4,8,.7);z-index:20;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sheet{width:100%;max-width:520px;max-height:92%;overflow:auto;background:var(--deep);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;
+  padding-inline:18px;padding-block:14px calc(env(safe-area-inset-bottom,0px) + 22px);display:flex;flex-direction:column;gap:14px;animation:up .35s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.grab{width:40px;height:4px;border-radius:4px;background:var(--line);margin:0 auto}
+.shHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.shHead h3{font-family:var(--display);font-weight:400;font-size:30px;line-height:1.05}
+.shVis{display:grid;grid-template-columns:30% 1fr;gap:8px;border:1px solid var(--line);border-radius:18px;padding:8px}
+.shVis svg{width:100%;height:auto;display:block}
+.how{display:flex;flex-direction:column;gap:9px;counter-reset:h}
+.how li{list-style:none;display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14px;line-height:1.5}
+.how li::before{counter-increment:h;content:counter(h);width:22px;height:22px;border-radius:50%;border:1px solid var(--tc);color:var(--tc);font-size:11px;display:grid;place-items:center;margin-top:1px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fact{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:3px}
+.fact small{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.fact b{font-family:var(--display);font-size:18px;font-weight:500;color:var(--tc)}
+
+@media (prefers-reduced-motion:reduce){.star{animation:none}.sheet{animation:none}}
+@media (max-height:780px){.pacer{width:min(38vw,146px)}.stepTitle{font-size:25px}.teach{min-height:58px}.teach p{font-size:16px}.visual{grid-template-columns:30% 1fr}.next{display:none}}
 </style>
 </head>
 <body>
+<div class="sky" aria-hidden="true"></div>
+<div class="stars" id="stars" aria-hidden="true"></div>
 
-<div class="ambient" id="ambient"></div>
-<div class="stars" id="stars"></div>
-<div class="gong-overlay" id="gong-overlay"><div class="gong-ring"></div></div>
-
-<div class="container">
-  <div class="header">
-    <h1>Aura Routine</h1>
-    <p>Chakra Mudra Meditation — Miami Beach</p>
+<!-- ================= HOME ================= -->
+<main class="screen" id="home">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Phase 1 · Rebalancing</div>
+      <h1 class="brand">Aura <em>Routine</em></h1>
+    </div>
+    <div class="eyebrow" id="todayName" style="text-align:right"></div>
   </div>
 
-  <!-- START SCREEN -->
-  <div id="start-screen">
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="val">40</div>
-        <div class="lbl">Minutes</div>
-      </div>
-      <div class="info-card">
-        <div class="val">9</div>
-        <div class="lbl">Steps</div>
-      </div>
-      <div class="info-card">
-        <div class="val">7</div>
-        <div class="lbl">Chakras</div>
-      </div>
-      <div class="info-card">
-        <div class="val">Phase 1</div>
-        <div class="lbl">Rebalancing</div>
-      </div>
+  <section class="dayCard" aria-label="21 day progress">
+    <div class="dayTop">
+      <div class="dayBig" id="dayBig"></div>
+      <div class="eyebrow" id="dayCount"></div>
     </div>
-    <button class="start-btn" onclick="startSession()"><span>Begin Session</span></button>
+    <div class="dots" id="dots"></div>
+    <div class="dayNote" id="dayNote"></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Session</div>
+    <div class="modes" id="modes" role="radiogroup" aria-label="Session length"></div>
+    <div class="seq" id="seq"></div>
+  </section>
+
+  <div class="cta">
+    <button class="btnGhost" id="resumeBtn" hidden></button>
+    <button class="btnMain" id="beginBtn">Begin session</button>
   </div>
 
-  <!-- SESSION SCREEN -->
-  <div id="session-screen">
-    <div style="width:100%">
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="step-indicator" id="step-indicator" style="margin-top:10px">Step 1 of 9</div>
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+      <h2 class="sec">The mudras</h2>
+      <span class="eyebrow">Tap to learn</span>
     </div>
+    <div class="lib" id="lib"></div>
+  </section>
 
-    <div class="circle-container">
-      <div class="circle-ring"></div>
-      <div class="circle-ring-2"></div>
-      <svg class="circle-svg" viewBox="0 0 200 200">
-        <circle class="circle-track" cx="100" cy="100" r="90"/>
-        <circle class="circle-progress" id="circle-progress" cx="100" cy="100" r="90"/>
-      </svg>
-      <div class="circle-inner">
-        <div class="timer-display" id="timer-display">2:00</div>
-        <div class="timer-label">remaining</div>
-      </div>
-    </div>
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2 class="sec">Sound</h2>
+    <div class="set" id="settings"></div>
+  </section>
 
-    <div class="chakra-badge" id="chakra-badge">
-      <div class="chakra-dot" id="chakra-dot"></div>
-      <div class="chakra-name" id="chakra-name">Preparation</div>
-    </div>
+  <p class="foot">Sit facing east · phone in front of you · eyes closed when you know the cues.</p>
+</main>
 
-    <div class="instruction-card" id="instruction-card">
-      <div class="step-title" id="step-title">Settle & Ground</div>
-      <div class="step-subtitle" id="step-subtitle">PREPARATION</div>
-      <div class="instruction-text" id="instruction-text"></div>
-      <div class="mantra-display" id="mantra-display" style="display:none">
-        <span class="mantra-word" id="mantra-word">LAM</span>
-        <div class="mantra-label">Repeat silently on each exhale</div>
-      </div>
-      <div class="visualize-pill" id="visualize-pill" style="display:none">
-        <div class="visualize-dot" id="visualize-dot"></div>
-        <span id="visualize-text">Visualize red light</span>
-      </div>
-    </div>
+<!-- ================= SESSION ================= -->
+<main class="screen" id="session" hidden>
+  <div class="sTop">
+    <button class="iconBtn" id="endBtn" aria-label="End session">✕</button>
+    <div class="sMeta"><div><b id="stepNo">1</b> / <span id="stepTot">10</span></div><div id="totLeft">32:00 left</div></div>
+    <button class="iconBtn" id="muteBtn" aria-label="Voice on or off">🔊</button>
+  </div>
+  <div class="endHint" id="endHint"></div>
+  <div class="segs" id="segs"></div>
 
-    <div class="controls">
-      <button class="ctrl-btn" onclick="prevStep()" title="Previous">&#8592;</button>
-      <button class="play-btn" id="play-btn" onclick="togglePause()">&#9646;&#9646;</button>
-      <button class="ctrl-btn" onclick="nextStep()" title="Next">&#8594;</button>
+  <div class="visual">
+    <div class="vFig">
+      <svg id="figS" viewBox="0 -18 120 146" aria-label="Body position"></svg>
+      <div class="vLab">Position</div>
     </div>
-
-    <div class="next-preview" id="next-preview">
-      <div class="next-dot"></div>
-      <div class="next-text">Up next: <strong id="next-text">Nadi Shodhana Breathing</strong></div>
+    <div>
+      <svg id="handS" viewBox="0 0 300 230" aria-label="Hand position"></svg>
     </div>
+    <button class="replay" id="replayBtn" aria-label="Replay hand animation">↻</button>
   </div>
 
-  <!-- COMPLETE SCREEN -->
-  <div id="complete-screen">
-    <div class="complete-icon">🙏</div>
-    <div class="complete-title">Session Complete</div>
-    <div class="complete-sub">Your aura has been cleansed and rebalanced.<br>Carry this stillness with you through the day.<br><br><em>Day 1 of 21 complete.</em></div>
-    <button class="restart-btn" onclick="restart()">Begin Again</button>
+  <div class="stepHead">
+    <div class="stepTitle" id="stepTitle">Settle &amp; Ground</div>
+    <div class="badge"><i></i><span id="stepCh">Preparation</span></div>
+  </div>
+
+  <div class="pacer">
+    <svg class="ring" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(237,230,217,.08)" stroke-width="3"/>
+      <circle id="ringP" cx="100" cy="100" r="94" fill="none" stroke="var(--c)" stroke-width="3" stroke-linecap="round" stroke-dasharray="590.6" stroke-dashoffset="590.6"/>
+    </svg>
+    <div class="orb" id="orb"></div>
+    <div class="orbText"><div class="phase" id="phase">Breathe</div><div class="count" id="count"></div><div class="count" id="stepTime" style="opacity:.55;font-size:11px">2:00</div></div>
+  </div>
+
+  <div class="mantraRow" id="mantraRow"><div class="mantra" id="mantra">LAM</div></div>
+  <div class="viz" id="viz"></div>
+
+  <div class="teach"><p id="teach">Find your seat.</p></div>
+
+  <div class="controls">
+    <button class="ctl" id="prevBtn" aria-label="Previous step">⟵</button>
+    <button class="play" id="playBtn" aria-label="Pause">❚❚</button>
+    <button class="ctl" id="nextBtn" aria-label="Next step">⟶</button>
+  </div>
+  <div class="next" id="nextUp"></div>
+</main>
+
+<!-- ================= DONE ================= -->
+<main class="screen" id="done" hidden>
+  <svg class="lotus" viewBox="0 0 120 120" aria-hidden="true">
+    <defs><radialGradient id="lg" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#F3D9A6"/><stop offset="1" stop-color="#D6B27A" stop-opacity="0"/></radialGradient></defs>
+    <circle cx="60" cy="66" r="50" fill="url(#lg)" opacity=".5"/>
+    <g fill="none" stroke="#D6B27A" stroke-width="1.4">
+      <path d="M60 30 C70 48 70 66 60 84 C50 66 50 48 60 30Z"/>
+      <path d="M60 84 C58 64 70 46 88 40 C90 60 80 76 60 84Z"/>
+      <path d="M60 84 C62 64 50 46 32 40 C30 60 40 76 60 84Z"/>
+      <path d="M60 84 C74 76 92 74 104 80 C92 90 76 92 60 84Z"/>
+      <path d="M60 84 C46 76 28 74 16 80 C28 90 44 92 60 84Z"/>
+    </g>
+  </svg>
+  <div class="doneTitle">Practice complete</div>
+  <div class="dots" id="doneDots"></div>
+  <div class="doneSub" id="doneSub"></div>
+  <button class="btnMain" id="homeBtn" style="width:100%;max-width:340px">Back home</button>
+</main>
+
+<!-- ================= SHEET ================= -->
+<div class="veil" id="veil" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+    <div class="grab"></div>
+    <div class="shHead">
+      <div><div class="eyebrow" id="shCh"></div><h3 id="shTitle"></h3></div>
+      <button class="iconBtn" id="shClose" aria-label="Close">✕</button>
+    </div>
+    <div class="shVis">
+      <svg id="figL" viewBox="0 -18 120 146" aria-label="Body position"></svg>
+      <svg id="handL" viewBox="0 0 300 230" aria-label="Hand animation"></svg>
+    </div>
+    <div class="facts" id="shFacts"></div>
+    <ol class="how" id="shHow"></ol>
+    <div class="viz" id="shIntent"></div>
+    <button class="btnGhost" id="shSound">Play this chakra's bell</button>
   </div>
 </div>
 
 <script>
-// ── STEPS DATA ──────────────────────────────────────────────────────────────
-const steps = [
-  {
-    title: "Settle & Ground",
-    subtitle: "PREPARATION",
-    duration: 120,
-    chakra: "Preparation",
-    chakraColor: "#c8a96e",
-    glowColor: "rgba(200,169,110,0.12)",
-    lineColor: "#c8a96e",
-    mantra: null,
-    visualize: null,
-    instructions: [
-      "Sit cross-legged on your mat, or on the edge of a chair with feet flat on the floor.",
-      "Lengthen your spine — imagine a golden thread pulling the crown of your head toward the sky.",
-      "Soften your shoulders down and back. Let your jaw unclench.",
-      "Rest your hands on your knees, palms facing upward.",
-      "Close your eyes. Take three natural breaths. Simply arrive here.",
-      "With each exhale, let the day dissolve. There is nowhere else to be.",
-      "Notice the ground beneath you. Feel supported, stable, held.",
-    ]
-  },
-  {
-    title: "Nadi Shodhana",
-    subtitle: "ALTERNATE NOSTRIL BREATHING — 10 ROUNDS",
-    duration: 600,
-    chakra: "Breath",
-    chakraColor: "#a8c4d4",
-    glowColor: "rgba(168,196,212,0.1)",
-    lineColor: "#a8c4d4",
-    mantra: null,
-    visualize: null,
-    instructions: [
-      "Raise your right hand to your face. Rest your index and middle fingers gently between your eyebrows.",
-      "Your thumb hovers over the right nostril. Your ring finger hovers over the left.",
-      "Close the right nostril with your thumb. Inhale slowly through the LEFT for 4 counts.",
-      "Close both nostrils. Hold the breath for 4 counts. Feel the stillness.",
-      "Release the thumb. Exhale slowly through the RIGHT nostril for 6 counts.",
-      "Inhale through the RIGHT for 4 counts. Hold both closed for 4. Exhale through the LEFT for 6.",
-      "That is one complete round. Continue for 10 rounds at this slow, steady rhythm.",
-      "Feel your left and right channels coming into balance. The mind grows quieter with each round.",
-    ]
-  },
-  {
-    title: "Gyan Mudra",
-    subtitle: "ROOT CHAKRA — MULADHARA",
-    duration: 180,
-    chakra: "Root Chakra",
-    chakraColor: "#E74C3C",
-    glowColor: "rgba(231,76,60,0.15)",
-    lineColor: "#E74C3C",
-    mantra: "LAM",
-    visualize: "Deep red light at the base of your spine",
-    instructions: [
-      "Touch the tip of your index finger to the tip of your thumb — like a gentle O. Both hands the same.",
-      "Let the other three fingers extend naturally, soft and relaxed.",
-      "Rest both hands on your knees, palms facing upward toward the sky.",
-      "Feel the weight of your body. The solidity of the earth beneath you.",
-      "With each inhale, draw red light up from the earth into the base of your spine.",
-      "With each exhale, whisper or think: LAM. Feel it vibrate at the very base of your body.",
-      "Intention: I am restoring what is already mine. I am grounded. I am safe.",
-    ]
-  },
-  {
-    title: "Shakti Mudra",
-    subtitle: "SACRAL CHAKRA — SVADHISTHANA",
-    duration: 180,
-    chakra: "Sacral Chakra",
-    chakraColor: "#E67E22",
-    glowColor: "rgba(230,126,34,0.15)",
-    lineColor: "#E67E22",
-    mantra: "VAM",
-    visualize: "Warm orange glow below your belly button",
-    instructions: [
-      "Bring both hands together in your lap, just below the navel.",
-      "Interlace your ring fingers and pinky fingers together gently.",
-      "Tuck both thumbs inside, pressing lightly against your palms.",
-      "Let your index and middle fingers point forward together, softly.",
-      "Feel warmth gathering in your lower abdomen — your center of creativity and flow.",
-      "With each exhale: VAM. Let the sound dissolve any stiffness or resistance in this area.",
-      "Intention: My vital energy is returning. I am alive, fluid, creative.",
-    ]
-  },
-  {
-    title: "Rudra Mudra",
-    subtitle: "SOLAR PLEXUS — MANIPURA",
-    duration: 180,
-    chakra: "Solar Plexus",
-    chakraColor: "#F1C40F",
-    glowColor: "rgba(241,196,15,0.15)",
-    lineColor: "#F1C40F",
-    mantra: "RAM",
-    visualize: "Bright yellow sunlight radiating from your stomach",
-    instructions: [
-      "Bring the tips of your thumb, index finger, and ring finger together on both hands.",
-      "Your middle finger and pinky remain straight and extended.",
-      "Hold both hands at navel height, elbows softly bent.",
-      "Feel a warmth building at your solar plexus — your center of power and will.",
-      "With each inhale, the yellow light grows brighter, stronger, more confident.",
-      "With each exhale: RAM. Feel the vibration strengthen your core.",
-      "Intention: I recover my strength. My personal power is restored and clear.",
-    ]
-  },
-  {
-    title: "Padma Mudra",
-    subtitle: "HEART CHAKRA — ANAHATA ★ MOST IMPORTANT",
-    duration: 300,
-    chakra: "Heart Chakra",
-    chakraColor: "#27AE60",
-    glowColor: "rgba(39,174,96,0.18)",
-    lineColor: "#27AE60",
-    mantra: "YAM",
-    visualize: "Emerald green light expanding gently from your chest",
-    instructions: [
-      "Press the base of both palms together — wrists touching, thumbs and pinkies touching.",
-      "Spread all your other fingers wide open, like a lotus flower blooming at your heart.",
-      "Hold this shape at the center of your chest. Feel its openness.",
-      "This is the aura expander. Stay here longer than any other mudra.",
-      "With each inhale, the green light at your heart grows larger, softer, more luminous.",
-      "With each exhale: YAM. Let it release anything heavy or contracted.",
-      "Intention: I open. I release the weight I have been carrying. My aura is filled with light.",
-    ]
-  },
-  {
-    title: "Throat Mudra",
-    subtitle: "THROAT CHAKRA — VISHUDDHA",
-    duration: 180,
-    chakra: "Throat Chakra",
-    chakraColor: "#2980B9",
-    glowColor: "rgba(41,128,185,0.15)",
-    lineColor: "#2980B9",
-    mantra: "HAM",
-    visualize: "Clear blue sky light at your throat",
-    instructions: [
-      "Interlace all your fingers together, except the thumbs.",
-      "Both thumbs point straight upward, pressing gently side by side.",
-      "Hold the shape in front of your throat, elbows relaxed.",
-      "Soften the muscles of your jaw, your neck, your face. Let everything release.",
-      "The throat holds so much — unsaid words, swallowed emotions. Let this mudra open that space.",
-      "With each exhale: HAM. Feel your throat vibrate with clear blue light.",
-      "Intention: I express freely. My voice, my truth, flows with ease.",
-    ]
-  },
-  {
-    title: "Kalesvara Mudra",
-    subtitle: "THIRD EYE — AJNA",
-    duration: 180,
-    chakra: "Third Eye",
-    chakraColor: "#8E44AD",
-    glowColor: "rgba(142,68,173,0.15)",
-    lineColor: "#8E44AD",
-    mantra: "OM",
-    visualize: "Deep indigo pulse between your eyebrows",
-    instructions: [
-      "Touch the tips of both middle fingers together. Touch the first knuckles of your index fingers.",
-      "Both thumbs point toward you and touch each other — forming a diamond or heart shape.",
-      "Curl the remaining fingers gently inward. Hold this shape at forehead level, not touching.",
-      "Direct your inner gaze — with eyes still closed — toward the point between your eyebrows.",
-      "You may see a soft pulsing light here. Do not chase it. Simply observe.",
-      "With each exhale: OM. Feel the vibration resonate precisely at the third eye.",
-      "Intention: My mind is clear. My intuition is awake. I see what is true.",
-    ]
-  },
-  {
-    title: "Crown Mudra",
-    subtitle: "CROWN CHAKRA — SAHASRARA",
-    duration: 180,
-    chakra: "Crown Chakra",
-    chakraColor: "#9B59B6",
-    glowColor: "rgba(155,89,182,0.12)",
-    lineColor: "#BDC3C7",
-    mantra: "AUM",
-    visualize: "Pure white light entering from above, flowing through your entire body",
-    instructions: [
-      "Raise both hands above your head. Turn your palms to face the sky.",
-      "Let your fingers open and relax — slightly spread, completely soft.",
-      "Elbows gently bent. Shoulders dropped. Arms like a wide, open vessel.",
-      "Feel the space above the crown of your head — open, vast, receptive.",
-      "With each inhale, receive pure white light from above. It enters through the crown.",
-      "With each exhale: AUM — Aaah... Uuuh... Mmmm. Hold the M until the vibration fades.",
-      "In the silence after each AUM — stay. That silence is the most sacred moment.",
-      "Intention: I am complete. I am connected to something larger than myself.",
-    ]
-  },
-];
+/* =====================================================================
+   DATA
+   ===================================================================== */
+const CH = {
+  prep:  {label:'Preparation',              color:'#D6B27A', freq:432, point:null},
+  breath:{label:'Breath · Pranayama',       color:'#8EC5D6', freq:432, point:'eye'},
+  root:  {label:'Root · Muladhara',         color:'#E5484D', freq:396, point:'root'},
+  sacral:{label:'Sacral · Svadhisthana',    color:'#F2873A', freq:417, point:'sacral'},
+  solar: {label:'Solar plexus · Manipura',  color:'#F4C542', freq:528, point:'solar'},
+  heart: {label:'Heart · Anahata',          color:'#3CC97F', freq:639, point:'heart'},
+  throat:{label:'Throat · Vishuddha',       color:'#3E8EF7', freq:741, point:'throat'},
+  eye:   {label:'Third eye · Ajna',         color:'#7B61FF', freq:852, point:'eye'},
+  crown: {label:'Crown · Sahasrara',        color:'#C6A8FF', freq:963, point:'crown'},
+  seal:  {label:'Closing seal',             color:'#D6B27A', freq:432, point:'heart'},
+};
 
-// Seal step appended at end
-steps.push({
-  title: "Anjali Mudra",
-  subtitle: "CLOSING SEAL",
-  duration: 120,
-  chakra: "Seal",
-  chakraColor: "#c8a96e",
-  glowColor: "rgba(200,169,110,0.1)",
-  lineColor: "#c8a96e",
-  mantra: null,
-  visualize: null,
-  instructions: [
-    "Press both palms together at your heart. Fingers pointing upward.",
-    "Let your thumbs rest lightly against your sternum.",
-    "Bow your head gently forward. Close your eyes completely.",
-    "This gesture seals everything you have built today.",
-    "Sit here for two full minutes. Do not rush. The integration is happening now.",
-    "Your field is recalibrated. Your aura is restored. Carry this stillness with you.",
-    "When you are ready — slowly open your eyes. Take one long breath. You are complete.",
-  ]
+const STEPS = {
+  settle:{title:'Settle & Ground', ch:'prep', pose:'rest', fig:'knees', breath:'calm',
+    viz:'Soft golden light around your whole body',
+    lines:[
+      'Sit cross-legged, or on the edge of a chair with your feet flat on the floor.',
+      'Lengthen your spine. Imagine a golden thread lifting the crown of your head.',
+      'Soften your shoulders down and back. Unclench your jaw.',
+      'Rest your hands on your knees, palms facing up. Close your eyes.',
+      'Breathe slowly. In through the nose, a long breath out.',
+      'Let the day dissolve. There is nowhere else to be.'
+    ]},
+  nadi:{title:'Nadi Shodhana', ch:'breath', pose:'nadi', fig:'nose', breath:'nadi',
+    viz:'Left and right channels coming into balance',
+    lines:[
+      {at:1,  text:'Alternate nostril breathing. Raise your right hand and rest your index and middle fingers between your eyebrows.'},
+      {at:11, text:'Your thumb closes the right nostril. Your ring finger closes the left.'},
+      {at:21, text:'Follow the cues. In for four, hold for four, out for six. Let us begin.'},
+      {at:-16,text:'Lower your hand to your knee. Notice how calm and even your breath feels.'}
+    ],
+    how:['Raise your right hand. Index and middle fingers rest between the eyebrows.','Thumb hovers over the right nostril, ring finger over the left.','Close right, inhale left for 4. Close both, hold 4. Open right, exhale 6.','Inhale right 4. Hold 4. Exhale left 6. That is one round.']},
+  gyan:{title:'Gyan Mudra', ch:'root', pose:'gyan', fig:'knees', breath:'mudra', mantra:'LAM',
+    viz:'Deep red light at the base of the spine', intent:'I am grounded. I am stable. I am safe.',
+    lines:[
+      'Gyan Mudra. On both hands, touch the tip of the index finger to the tip of the thumb.',
+      'The other three fingers stay straight and relaxed. Rest your hands on your knees, palms up.',
+      'Bring your attention to the base of your spine.',
+      'As you inhale, draw deep red light up from the earth into the base of your spine.',
+      'As you exhale, chant softly, or silently. LAM.',
+      'I am grounded. I am stable. I am safe.'
+    ],
+    how:['Touch the tip of the index finger to the tip of the thumb, like a soft O.','Middle, ring and little fingers stay long and relaxed.','Same shape on both hands.','Rest the backs of the hands on your knees, palms up.']},
+  shakti:{title:'Shakti Mudra', ch:'sacral', pose:'shakti', fig:'lap', breath:'mudra', mantra:'VAM',
+    viz:'Warm orange glow below the navel', intent:'My vital energy is returning. I am alive and fluid.',
+    lines:[
+      'Shakti Mudra. Bring both hands together in your lap, just below the navel.',
+      'Interlace your ring and little fingers. Tuck both thumbs inside, against your palms.',
+      'Index and middle fingers point forward, pressing against each other.',
+      'Feel a warm orange glow gather below your navel.',
+      'Exhale with the sound VAM. Let any stiffness soften.',
+      'My vital energy is returning. I am alive and fluid.'
+    ],
+    how:['Bring both hands together in your lap, below the navel.','Interlace the ring and little fingers of both hands.','Tuck the thumbs into the palms.','Index and middle fingers point forward, pressed together.']},
+  rudra:{title:'Rudra Mudra', ch:'solar', pose:'rudra', fig:'navel', breath:'mudra', mantra:'RAM',
+    viz:'Bright yellow light radiating from the stomach', intent:'I recover my strength. I act from my center.',
+    lines:[
+      'Rudra Mudra. On both hands, bring the tips of the thumb, index and ring finger together.',
+      'Middle finger and little finger stay long. Hold your hands at navel height.',
+      'Feel your solar plexus, just above the navel. Your center of strength.',
+      'Inhale bright yellow light, like sun on the water.',
+      'Exhale with the sound RAM.',
+      'I recover my strength. I act from my center.'
+    ],
+    how:['Bring the tips of thumb, index and ring finger together.','Middle and little fingers stay straight.','Same shape on both hands.','Hold the hands at navel height, elbows soft.']},
+  padma:{title:'Padma Mudra', ch:'heart', pose:'padma', fig:'heart', breath:'mudra', mantra:'YAM', star:true,
+    viz:'Emerald green light expanding from the chest', intent:'I open. I release the weight I have been carrying.',
+    lines:[
+      'Padma Mudra, the lotus. The most important mudra of this practice.',
+      'Press the heels of your palms together. Thumbs touch. Little fingers touch.',
+      'Open the other fingers wide, like a flower opening to the sun. Hold it at your heart.',
+      'Inhale emerald green light into your chest.',
+      'Exhale with the sound YAM, and let something heavy go.',
+      'The green light grows larger than your body. This is your aura, filling with light.',
+      'I open. I release the weight I have been carrying.',
+      'Stay here. Let each breath refill the field around you.'
+    ],
+    how:['Press the heels of the palms together at the heart.','Thumbs touch each other, little fingers touch each other.','Spread the other fingers wide like an opening lotus.','Hold longest of all: this is the aura expander.']},
+  throat:{title:'Throat Mudra', ch:'throat', pose:'throat', fig:'throat', breath:'mudra', mantra:'HAM',
+    viz:'Clear blue light at the throat', intent:'I express myself freely. My voice is clear.',
+    lines:[
+      'Throat Mudra. Interlace all your fingers, keeping the thumbs free.',
+      'Thumbs point up and touch side by side. Hold the shape in front of your throat.',
+      'Soften your jaw, your tongue, your neck.',
+      'Inhale clear blue light into your throat.',
+      'Exhale with the sound HAM. Feel it vibrate like a bell.',
+      'I express myself freely. My voice is clear.'
+    ],
+    how:['Interlace all the fingers of both hands.','Keep the thumbs free, pointing up.','Thumbs touch side by side.','Hold the shape in front of the throat.']},
+  kalesvara:{title:'Kalesvara Mudra', ch:'eye', pose:'kalesvara', fig:'forehead', breath:'mudra', mantra:'OM',
+    viz:'Indigo light pulsing between the eyebrows', intent:'My mind is clear. My intuition is awake.',
+    lines:[
+      'Kalesvara Mudra. Touch the tips of your middle fingers together.',
+      'Touch the first knuckles of your index fingers. Thumbs point toward you and touch.',
+      'Curl the other fingers inward. Hold the shape in front of your forehead.',
+      'Rest your inner gaze between your eyebrows.',
+      'Exhale with a long, resonant OM.',
+      'My mind is clear. My intuition is awake.'
+    ],
+    how:['Middle fingertips touch, pointing up.','Index fingers bend and touch at the first knuckles.','Thumbs point toward the chest and touch.','Ring and little fingers curl in. Hold at forehead level.']},
+  crown:{title:'Crown Mudra', ch:'crown', pose:'crown', fig:'above', breath:'crown', mantra:'AUM',
+    viz:'White light entering through the top of the head', intent:'I am complete. I am connected.',
+    lines:[
+      'Crown. Raise both hands above your head, palms open to the sky.',
+      'Elbows soft. Shoulders down. Like a bowl lifted to receive rain.',
+      'Inhale white light through the top of your head.',
+      'Exhale the full sound. AUM. Let the M hum at the crown.',
+      'Rest in the silence after each AUM. This is where integration happens.',
+      'I am complete. I am connected.'
+    ],
+    how:['Raise both hands above the head.','Palms face the sky, fingers soft and slightly open.','Elbows bent, shoulders relaxed: arms form a wide U.','Receive light from above on every inhale.']},
+  anjali:{title:'Anjali Mudra', ch:'seal', pose:'anjali', fig:'chest', breath:null,
+    viz:'Everything you built today, sealed at the heart', intent:'Gratitude. The practice is sealed.',
+    lines:[
+      'Anjali Mudra. Lower your hands and press your palms together at your heart.',
+      'Thumbs rest lightly on your breastbone. Bow your head slightly.',
+      'This seals everything you built today.',
+      'Stay in silence.',
+      {at:-22, text:'When you are ready, take one long breath, and slowly open your eyes. Namaste.'}
+    ],
+    how:['Press the palms flat together at the heart.','Fingers point up, thumbs rest on the breastbone.','Bow the head slightly.','Stay two minutes in silence.']},
+};
+
+const NADI_INTRO = 32, NADI_ROUND = 28, NADI_OUTRO = 18;
+const MODES = {
+  full:  {label:'Full',   steps:[['settle',120],['nadi',0,10],['gyan',180],['shakti',180],['rudra',180],['padma',300],['throat',180],['kalesvara',180],['crown',180],['anjali',120]]},
+  short: {label:'Short',  steps:[['settle',120],['nadi',0,10],['padma',600],['anjali',120]]},
+  travel:{label:'Travel', steps:[['settle',120],['nadi',0,5],['padma',420],['anjali',120]]},
+};
+const BREATH = {
+  calm:[['in',4],['out',6]],
+  mudra:[['in',4],['out',6]],
+  crown:[['in',4],['out',8]],
+  nadi:[['in',4,'L'],['hold',4],['out',6,'R'],['in',4,'R'],['hold',4],['out',6,'L']],
+};
+const LIB = ['gyan','shakti','rudra','padma','throat','kalesvara','crown','anjali'];
+
+/* =====================================================================
+   HAND DRAWING ENGINE
+   Local hand: palm facing viewer, fingers up, thumb on +x side.
+   Each finger is a quadratic curve from its base to its tip.
+   ===================================================================== */
+const HAND = {
+  palm:'M -24 64 C -34 50 -38 20 -37 -4 C -36 -20 -31 -30 -18 -32 L 20 -33 C 31 -32 37 -26 38 -10 C 38 10 34 38 22 64 Z',
+  crease:'M -30 6 Q -6 16 22 -2 M -26 26 Q 0 30 16 14',
+  order:['thumb','pinky','ring','middle','index'],
+  f:{
+    pinky:{b:[-27,-22], L:44, w:13, a:-14},
+    ring: {b:[-10,-29], L:56, w:15, a:-5},
+    middle:{b:[7,-31],  L:62, w:16, a:2},
+    index:{b:[24,-28],  L:56, w:15, a:11},
+    thumb:{b:[30,22],   L:50, w:18, a:58},
+  }
+};
+const SKIN = '#EBCBA9', SKIN2 = '#D9AE88', OUT = '#5B3E2A';
+const rad = d => d*Math.PI/180;
+const lerp = (a,b,t) => a+(b-a)*t;
+const ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+
+function toLocal(h,[gx,gy]){
+  const dx=gx-h.x, dy=gy-h.y, r=rad(h.r||0), c=Math.cos(r), s=Math.sin(r);
+  const x1= dx*c+dy*s, y1=-dx*s+dy*c;
+  return [x1/((h.s||1)*(h.sx||1)*(h.m?-1:1)), y1/(h.s||1)];
+}
+function toGlobal(h,[x,y]){
+  const X=x*(h.s||1)*(h.sx||1)*(h.m?-1:1), Y=y*(h.s||1), r=rad(h.r||0), c=Math.cos(r), s=Math.sin(r);
+  return [X*c-Y*s+h.x, X*s+Y*c+h.y];
+}
+function autoBend(L,d,k){
+  if(d>=L*.9) return 0;
+  const s=L*.9; let hh=Math.sqrt(Math.max(0,(s*s-d*d)*3/16));
+  hh=Math.min(hh,L*.4);
+  return 2*hh*(k==null?1:k);
+}
+function defFinger(h,name){
+  const F=HAND.f[name]; const a=rad((h.spread&&h.spread[name]!=null)?h.spread[name]:F.a);
+  return {t:[F.b[0]+F.L*Math.sin(a), F.b[1]-F.L*Math.cos(a)], bend:(h.curl||0)*(name==='thumb'?-1:1), layer:'back', z:null};
+}
+/* Resolve a pose into concrete local finger states (formed) + open states */
+const POSE_CACHE = {};
+function resolvePose(id){
+  if(POSE_CACHE[id]) return POSE_CACHE[id];
+  const P = POSES[id]; const hands=[];
+  P.hands.forEach((h,hi)=>{
+    const formed={}, open={};
+    for(const n of HAND.order){
+      open[n]=defFinger(h,n);
+      const spec=h.f&&h.f[n];
+      if(!spec){ formed[n]={...open[n]}; continue; }
+      const t = spec.g ? toLocal(h,spec.t) : spec.t.slice();
+      const F=HAND.f[n]; const d=Math.hypot(t[0]-F.b[0], t[1]-F.b[1]);
+      formed[n]={t, bend: spec.b!=null ? spec.b : autoBend(F.L,d,spec.k), layer: spec.l||'front', z: spec.z??null};
+    }
+    const oh={...h, x:h.x+(h.ox||0), y:h.y+(h.oy||0)};
+    hands.push({h, oh, formed, open});
+  });
+  return POSE_CACHE[id]={hands, P};
+}
+function fingerPath(F,st){
+  const [bx,by]=F.b, [tx,ty]=st.t; const dx=tx-bx, dy=ty-by, len=Math.hypot(dx,dy)||1;
+  const nx=-dy/len, ny=dx/len; const cx=(bx+tx)/2+nx*st.bend, cy=(by+ty)/2+ny*st.bend;
+  return `M${bx.toFixed(1)} ${by.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)}`;
+}
+function tf(h){ const s=h.s||1, sx=s*(h.sx||1); return `translate(${h.x.toFixed(1)} ${h.y.toFixed(1)}) rotate(${(h.r||0).toFixed(1)}) scale(${(h.m?-sx:sx).toFixed(3)} ${s.toFixed(3)})`; }
+
+/* Draw a pose at formation progress p (0 open → 1 formed). pulse: 0..1 breathing glow */
+function drawPose(id, p, pre, color, pulse){
+  const R=resolvePose(id), P=R.P; const items=[]; const q=ease(Math.max(0,Math.min(1,p)));
+  const active=new Set(P.active||[]);
+  R.hands.forEach((H,hi)=>{
+    const h={x:lerp(H.oh.x,H.h.x,q), y:lerp(H.oh.y,H.h.y,q), r:lerp(H.oh.r||0,H.h.r||0,q), s:H.h.s||1, sx:lerp(H.oh.osx||H.h.sx||1,H.h.sx||1,q), m:H.h.m};
+    const T=tf(h);
+    items.push({z:hi*10+5, svg:`<g transform="${T}"><path d="${HAND.palm}" fill="url(#${pre}sk)" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/><path d="${HAND.crease}" fill="none" stroke="${OUT}" stroke-opacity=".28" stroke-width="1.1" stroke-linecap="round"/></g>`});
+    HAND.order.forEach((n,fi)=>{
+      const F=HAND.f[n], a=H.open[n], b=H.formed[n];
+      const st={t:[lerp(a.t[0],b.t[0],q), lerp(a.t[1],b.t[1],q)], bend:lerp(a.bend,b.bend,q)};
+      const layer = q>.35 ? b.layer : a.layer;
+      const z = (q>.35 && b.z!=null) ? b.z : hi*10 + (layer==='front'?6:1) + fi*.1;
+      const d=fingerPath(F,st);
+      const on=active.has(n) && q>.5;
+      const oc = on ? color : OUT, ow = on ? F.w+4.2 : F.w+3;
+      items.push({z, svg:`<g transform="${T}"><path d="${d}" stroke="${oc}" stroke-width="${ow}" stroke-linecap="round" fill="none"/><path d="${d}" stroke="url(#${pre}sk)" stroke-width="${F.w}" stroke-linecap="round" fill="none"/></g>`});
+    });
+    H.cur=h;
+  });
+  items.sort((a,b)=>a.z-b.z);
+  let deco='';
+  if(P.deco==='head'){
+    deco+=`<path d="M58 232 C62 196 102 180 150 180 C198 180 238 196 242 232" fill="rgba(237,230,217,.05)" stroke="rgba(237,230,217,.35)" stroke-width="1.5"/>`;
+    for(let i=0;i<5;i++){ const x=110+i*20; deco+=`<line x1="${x}" y1="${8+ (i%2)*6}" x2="${150+(x-150)*.25}" y2="170" stroke="${color}" stroke-opacity="${(.12+.18*pulse*q).toFixed(2)}" stroke-width="1.2" stroke-dasharray="3 6"/>`; }
+  }
+  let glow='';
+  if(q>.82){
+    const g=(q-.82)/.18;
+    (P.contact||[]).forEach(c=>{
+      let pt;
+      if(typeof c[1]==='number') pt=c;
+      else { const H=R.hands[c[0]]; const n=c[1]; const b=H.formed[n]; pt=toGlobal(H.cur,b.t); }
+      const r=(10+6*pulse)*g;
+      glow+=`<circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="${(r*2.2).toFixed(1)}" fill="url(#${pre}gl)" opacity="${(.55+.35*pulse).toFixed(2)}"/><circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="${(2.2*g).toFixed(1)}" fill="#fff" opacity=".9"/>`;
+    });
+  }
+  const defs=`<defs><linearGradient id="${pre}sk" gradientUnits="userSpaceOnUse" x1="0" y1="-95" x2="0" y2="70"><stop offset="0" stop-color="${SKIN}"/><stop offset="1" stop-color="${SKIN2}"/></linearGradient><radialGradient id="${pre}gl"><stop offset="0" stop-color="${color}" stop-opacity=".95"/><stop offset=".45" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient><radialGradient id="${pre}bg" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="${color}" stop-opacity=".16"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient></defs>`;
+  return defs+`<rect x="0" y="0" width="300" height="230" fill="url(#${pre}bg)"/>`+deco+items.map(i=>i.svg).join('')+glow;
+}
+
+/* Hand poses (hands panel viewBox 300 x 230) */
+const POSES = {
+  rest:{active:[], hands:[
+    {x:88, y:140, r:-12, s:.8, curl:5, spread:{thumb:36}},
+    {x:212,y:140, r:12,  s:.8, m:1, curl:5, spread:{thumb:36}}]},
+  gyan:{active:['index','thumb'], contact:[[0,'index']], hands:[
+    {x:140,y:142,s:1.2, f:{index:{t:[64,-2],k:-1}, thumb:{t:[64,-2],k:1,l:'back'}}}]},
+  rudra:{active:['thumb','index','ring'], contact:[[0,'thumb']], hands:[
+    {x:150,y:140,s:1.22, f:{thumb:{t:[7,10],k:.3,z:9}, index:{t:[7,10],k:-.28,z:8}, ring:{t:[7,10],k:.28,z:7}}}]},
+  padma:{active:['thumb'], contact:[[0,'thumb']], hands:[
+    {x:116,y:178,r:-22,s:.9, ox:-14, spread:{pinky:-30,ring:-15,middle:0,index:15}, f:{thumb:{t:[149,160],g:1,k:.8,l:'back'}}},
+    {x:184,y:178,r:22, s:.9, ox:14, m:1, spread:{pinky:-30,ring:-15,middle:0,index:15}, f:{thumb:{t:[151,160],g:1,k:.8,l:'back'}}}]},
+  shakti:{active:['index','middle','ring','pinky'], contact:[[0,'index']], hands:[
+    {x:130,y:152,r:6,s:.88, ox:-16, f:{index:{t:[147,66],g:1,b:0,l:'back'}, middle:{t:[138,60],g:1,b:0,l:'back'}, ring:{t:[168,120],g:1,k:-1,z:30}, pinky:{t:[166,140],g:1,k:-1,z:32}, thumb:{t:[140,150],g:1,k:1,z:20}}},
+    {x:170,y:152,r:-6,s:.88, ox:16, m:1, f:{index:{t:[153,66],g:1,b:0,l:'back'}, middle:{t:[162,60],g:1,b:0,l:'back'}, ring:{t:[132,126],g:1,k:-1,z:31}, pinky:{t:[134,146],g:1,k:-1,z:33}, thumb:{t:[160,150],g:1,k:1,z:21}}}]},
+  throat:{active:['thumb'], contact:[[0,'thumb']], hands:[
+    {x:138,y:150,r:90,m:1,s:.85, ox:-18, f:{index:{t:[190,128],g:1,k:.8,z:40}, middle:{t:[193,142],g:1,k:.8,z:42}, ring:{t:[191,156],g:1,k:.8,z:44}, pinky:{t:[185,170],g:1,k:.8,z:46}, thumb:{t:[147,94],g:1,k:.3,l:'back'}}},
+    {x:162,y:158,r:-90,s:.85, ox:18, f:{index:{t:[110,136],g:1,k:-.8,z:41}, middle:{t:[107,150],g:1,k:-.8,z:43}, ring:{t:[109,164],g:1,k:-.8,z:45}, pinky:{t:[115,178],g:1,k:-.8,z:47}, thumb:{t:[153,94],g:1,k:-.3,l:'back'}}}]},
+  kalesvara:{active:['middle','index','thumb'], contact:[[0,'middle'],[0,'thumb']], hands:[
+    {x:118,y:140,r:16,s:.9, ox:-16, f:{middle:{t:[149,60],g:1,b:0,l:'back'}, index:{t:[146,128],g:1,k:-1}, ring:{t:[8,2],k:-1,z:6}, pinky:{t:[-6,8],k:-1,z:5}, thumb:{t:[149,202],g:1,k:.35,l:'back'}}},
+    {x:182,y:140,r:-16,s:.9, ox:16, m:1, f:{middle:{t:[151,60],g:1,b:0,l:'back'}, index:{t:[154,128],g:1,k:-1}, ring:{t:[8,2],k:-1,z:16}, pinky:{t:[-6,8],k:-1,z:15}, thumb:{t:[151,202],g:1,k:.35,l:'back'}}}]},
+  crown:{active:[], deco:'head', contact:[[150,176]], hands:[
+    {x:100,y:110,r:-24,s:.84, oy:40, curl:3, spread:{pinky:-24,ring:-10,middle:2,index:13,thumb:50}},
+    {x:200,y:110,r:24, s:.84, oy:40, m:1, curl:3, spread:{pinky:-24,ring:-10,middle:2,index:13,thumb:50}}]},
+  anjali:{active:[], contact:[[150,150]], hands:[
+    {x:145,y:128,s:1.1, sx:.46, osx:1, ox:-34, spread:{pinky:-2,ring:-1,middle:0,index:1,thumb:12}},
+    {x:155,y:128,s:1.1, sx:.46, osx:1, ox:34, m:1, spread:{pinky:-2,ring:-1,middle:0,index:1,thumb:12}}]},
+};
+
+/* Nostril view for Nadi Shodhana */
+function drawNadi(b, pre, color, t){
+  const sk='rgba(237,230,217,.06)', ln='rgba(237,230,217,.38)';
+  let s=`<defs><radialGradient id="${pre}bg" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="${color}" stop-opacity=".14"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient><linearGradient id="${pre}sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKIN}"/><stop offset="1" stop-color="${SKIN2}"/></linearGradient></defs><rect width="300" height="230" fill="url(#${pre}bg)"/>`;
+  s+=`<ellipse cx="150" cy="112" rx="64" ry="84" fill="${sk}" stroke="${ln}" stroke-width="1.5"/>`;
+  s+=`<path d="M118 84 Q128 78 139 83 M161 83 Q172 78 182 84" fill="none" stroke="${ln}" stroke-width="1.6" stroke-linecap="round"/>`;
+  s+=`<path d="M120 97 Q129 102 138 97 M162 97 Q171 102 180 97" fill="none" stroke="${ln}" stroke-width="1.5" stroke-linecap="round"/>`;
+  s+=`<path d="M147 96 Q144 118 136 132 Q139 142 150 140 Q161 142 164 132 Q156 118 153 96" fill="none" stroke="${ln}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  s+=`<path d="M136 164 Q150 170 164 164" fill="none" stroke="${ln}" stroke-width="1.4" stroke-linecap="round"/>`;
+  // index + middle resting between the brows
+  s+=`<circle cx="144" cy="80" r="6" fill="url(#${pre}sk)" stroke="${OUT}" stroke-width="1"/><circle cx="156" cy="79" r="6" fill="url(#${pre}sk)" stroke="${OUT}" stroke-width="1"/>`;
+  // practitioner's right nostril is on the viewer's left
+  const RX=141, LX=159, NY=137;
+  const phase=b?b.ph:null, side=b?b.side:null;
+  const rightClosed = b && (phase==='hold' || side==='L');
+  const leftClosed  = b && (phase==='hold' || side==='R');
+  s+=`<ellipse cx="${RX}" cy="${NY}" rx="4.5" ry="2.6" fill="#0B0D14"/><ellipse cx="${LX}" cy="${NY}" rx="4.5" ry="2.6" fill="#0B0D14"/>`;
+  // air particles
+  if(b && (phase==='in'||phase==='out')){
+    const X = side==='L'?LX:RX, dir = side==='L'?1:-1;
+    for(let i=0;i<7;i++){
+      let u=((t*.55+i/7)%1); if(phase==='in') u=1-u;
+      const px=X+dir*(4+u*48), py=NY+8+u*62, a=(phase==='in'? (1-u):(1-u))*.9;
+      s+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${(2.6-u*1.2).toFixed(1)}" fill="${color}" opacity="${a.toFixed(2)}"/>`;
+    }
+    s+=`<path d="M${X} ${NY+6} Q${X+dir*18} ${NY+30} ${X+dir*46} ${NY+68}" fill="none" stroke="${color}" stroke-opacity=".25" stroke-width="1.2" stroke-dasharray="2 5"/>`;
+  }
+  // finger pads closing a nostril
+  if(rightClosed) s+=`<ellipse cx="${RX-7}" cy="${NY-4}" rx="10" ry="12" fill="url(#${pre}sk)" stroke="${OUT}" stroke-width="1.2"/><text x="${RX-40}" y="${NY-18}" fill="${color}" font-size="11" font-family="Jost,sans-serif" letter-spacing="1">THUMB</text>`;
+  if(leftClosed) s+=`<ellipse cx="${LX+7}" cy="${NY-4}" rx="10" ry="12" fill="url(#${pre}sk)" stroke="${OUT}" stroke-width="1.2"/><text x="${LX+16}" y="${NY-18}" fill="${color}" font-size="11" font-family="Jost,sans-serif" letter-spacing="1">RING</text>`;
+  s+=`<text x="84" y="222" fill="rgba(237,230,217,.5)" font-size="10" font-family="Jost,sans-serif" letter-spacing="2">RIGHT</text><text x="186" y="222" fill="rgba(237,230,217,.5)" font-size="10" font-family="Jost,sans-serif" letter-spacing="2">LEFT</text>`;
+  return s;
+}
+
+/* =====================================================================
+   POSTURE FIGURE (seated, front view)
+   ===================================================================== */
+const FIG = {
+  sh:[[45,47],[75,47]], a:27, b:27,
+  pts:{root:[60,105],sacral:[60,94],solar:[60,81],heart:[60,64],throat:[60,51],eye:[60,19],crown:[60,6]},
+  hands:{
+    knees:[[27,108],[93,108]], lap:[[55,97],[65,97]], navel:[[50,82],[70,82]], heart:[[54,65],[66,65]],
+    chest:[[58,63],[62,63]], throat:[[55,53],[65,53]], forehead:[[55,26],[65,26]], above:[[40,-6],[80,-6]], nose:[[58,30],[93,108]],
+  }
+};
+function ik(S,T,a,b,out){
+  let dx=T[0]-S[0], dy=T[1]-S[1]; let d=Math.hypot(dx,dy); d=Math.min(Math.max(d,4),a+b-.5);
+  const ang=Math.atan2(dy,dx), A=Math.acos(Math.max(-1,Math.min(1,(a*a+d*d-b*b)/(2*a*d))));
+  const e1=[S[0]+a*Math.cos(ang+A),S[1]+a*Math.sin(ang+A)], e2=[S[0]+a*Math.cos(ang-A),S[1]+a*Math.sin(ang-A)];
+  const E = out<0 ? (e1[0]<e2[0]?e1:e2) : (e1[0]>e2[0]?e1:e2);
+  return [E,[S[0]+d*Math.cos(ang),S[1]+d*Math.sin(ang)]];
+}
+function drawFig(handsPos, point, color, pulse, pre){
+  const ln='rgba(237,230,217,.42)', fill='rgba(237,230,217,.06)';
+  let s=`<defs><radialGradient id="${pre}cg"><stop offset="0" stop-color="${color}" stop-opacity=".95"/><stop offset=".4" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient></defs>`;
+  s+=`<path d="M18 113 Q22 98 45 96 L75 96 Q98 98 102 113 Q100 123 86 122 L34 122 Q20 123 18 113Z" fill="${fill}" stroke="${ln}" stroke-width="1.2"/>`;
+  s+=`<path d="M34 110 Q60 102 86 112 M86 110 Q60 102 34 112" fill="none" stroke="${ln}" stroke-width=".9" opacity=".7"/>`;
+  s+=`<path d="M43 47 Q60 40 77 47 L73 93 Q60 98 47 93Z" fill="${fill}" stroke="${ln}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  s+=`<line x1="60" y1="33" x2="60" y2="41" stroke="${ln}" stroke-width="3" stroke-linecap="round"/>`;
+  s+=`<circle cx="60" cy="21" r="11.5" fill="${fill}" stroke="${ln}" stroke-width="1.2"/>`;
+  s+=`<path d="M54 23 q2 1.4 4 0 M62 23 q2 1.4 4 0" fill="none" stroke="${ln}" stroke-width=".9" stroke-linecap="round"/>`;
+  for(const k in FIG.pts){ const [x,y]=FIG.pts[k]; const on=k===point; s+=`<circle cx="${x}" cy="${y}" r="${on?2.4:1.5}" fill="${on?'#fff':CH[k==='eye'?'eye':k].color}" opacity="${on?1:.45}"/>`; }
+  if(point){ const [x,y]=FIG.pts[point]; const r=10+7*pulse; s+=`<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="url(#${pre}cg)"/>`; }
+  handsPos.forEach((T,i)=>{
+    const S=FIG.sh[i]; const [E,H]=ik(S,T,FIG.a,FIG.b,i===0?-1:1);
+    s+=`<path d="M${S[0]} ${S[1]} L${E[0].toFixed(1)} ${E[1].toFixed(1)} L${H[0].toFixed(1)} ${H[1].toFixed(1)}" fill="none" stroke="rgba(237,230,217,.55)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s+=`<circle cx="${H[0].toFixed(1)}" cy="${H[1].toFixed(1)}" r="4.2" fill="${SKIN}" stroke="${color}" stroke-width="1.4"/>`;
+  });
+  return s;
+}
+
+/* =====================================================================
+   SOUND (Web Audio: bells, singing bowl, chimes, ambient tone)
+   ===================================================================== */
+const Snd = {
+  ctx:null, out:null, drone:null,
+  init(){
+    try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+    if(this.ctx){ this.ctx.resume(); return; }
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    const c=this.ctx=new AC();
+    const comp=c.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=3;
+    this.out=c.createGain(); this.out.gain.value=.9; this.out.connect(comp); comp.connect(c.destination);
+    const s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(this.out); s.start(0);
+  },
+  tone(f,amp,decay,when,attack=.004,type='sine'){
+    const c=this.ctx, o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,when); g.gain.exponentialRampToValueAtTime(Math.max(amp,.0002),when+attack);
+    g.gain.exponentialRampToValueAtTime(.0001,when+decay);
+    o.connect(g); g.connect(this.out); o.start(when); o.stop(when+decay+.1);
+  },
+  bell(f,vol=.18,len=2.4,delay=0){
+    if(!this.ctx) return; const w=this.ctx.currentTime+.02+delay;
+    [[1,1,1],[2.01,.42,.7],[2.76,.32,.55],[4.07,.14,.35],[5.43,.08,.25]].forEach(([r,a,d])=>this.tone(f*r,vol*a,len*d,w));
+    this.tone(f*1.004,vol*.3,len*.9,w);
+  },
+  bowl(f,vol=.26,len=9){
+    if(!this.ctx) return; const w=this.ctx.currentTime+.02;
+    [[1,1,1],[2.72,.45,.75],[4.95,.2,.55],[7.8,.08,.35]].forEach(([r,a,d])=>{ this.tone(f*r,vol*a,len*d,w,.018); this.tone(f*r+.7,vol*a*.7,len*d,w,.03); });
+    this.tone(f*6.3,vol*.25,.25,w,.002,'triangle');
+  },
+  chimes(n=6,vol=.1){
+    if(!this.ctx) return; const notes=[1046.5,1174.7,1318.5,1568,1760,2093,2349.3,2637];
+    let d=0; for(let i=0;i<n;i++){ const f=notes[Math.floor(Math.random()*notes.length)]; this.bell(f,vol*(.55+Math.random()*.45),1.6+Math.random()*1.4,d); d+=.08+Math.random()*.12; }
+  },
+  cue(kind){ if(!this.ctx) return; if(kind==='in') this.bell(1318.5,.045,1.1); else if(kind==='out') this.bell(987.8,.045,1.4); else this.bell(1174.7,.03,.8); },
+  droneTo(freq){
+    if(!this.ctx) return; this.droneStop(2.5);
+    const c=this.ctx, w=c.currentTime, g=c.createGain(), lp=c.createBiquadFilter();
+    lp.type='lowpass'; lp.frequency.value=1100; g.gain.setValueAtTime(.0001,w); g.gain.exponentialRampToValueAtTime(.05,w+3.5);
+    const oscs=[[freq/2,1],[freq/2*1.5,.45],[freq,.25],[freq/2+.35,.6]].map(([f,a])=>{ const o=c.createOscillator(), og=c.createGain(); o.type='sine'; o.frequency.value=f; og.gain.value=a; o.connect(og); og.connect(lp); o.start(); return o; });
+    const lfo=c.createOscillator(), lg=c.createGain(); lfo.frequency.value=.11; lg.gain.value=.018; lfo.connect(lg); lg.connect(g.gain); lfo.start();
+    lp.connect(g); g.connect(this.out); this.drone={g,oscs:[...oscs,lfo]};
+  },
+  droneStop(fade=1.5){
+    if(!this.drone||!this.ctx) return; const {g,oscs}=this.drone, w=this.ctx.currentTime;
+    g.gain.cancelScheduledValues(w); g.gain.setValueAtTime(Math.max(g.gain.value,.0002),w); g.gain.exponentialRampToValueAtTime(.0001,w+fade);
+    oscs.forEach(o=>o.stop(w+fade+.1)); this.drone=null;
+  }
+};
+
+/* =====================================================================
+   VOICE (built-in speech)
+   ===================================================================== */
+const Voice = {
+  ok:'speechSynthesis' in window, v:null,
+  pick(){
+    if(!this.ok) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)); if(!vs.length) return;
+    const pref=[/Ava.*(Premium|Enhanced)/i,/Zoe.*(Premium|Enhanced)/i,/(Premium|Enhanced)/i,/Samantha/i,/Serena/i,/Karen/i,/Moira/i,/Google UK English Female/i,/Google US English/i];
+    for(const r of pref){ const f=vs.find(v=>r.test(v.name)); if(f){ this.v=f; return; } } this.v=vs[0];
+  },
+  say(text,force){
+    if(!this.ok || (!DB.settings.voice && !force)) return;
+    const t=text.replace(/\bAUM\b/g,'ah, oo, mmm').replace(/\bLAM\b/g,'lum').replace(/\bVAM\b/g,'vum').replace(/\bRAM\b/g,'rum').replace(/\bYAM\b/g,'yum').replace(/\bHAM\b/g,'hum').replace(/\bOM\b/g,'ohm');
+    const u=new SpeechSynthesisUtterance(t); if(this.v){ u.voice=this.v; u.lang=this.v.lang; } else u.lang='en-US';
+    u.rate=.86; u.pitch=.95; speechSynthesis.speak(u);
+  },
+  stop(){ if(this.ok) speechSynthesis.cancel(); }
+};
+if(Voice.ok){ Voice.pick(); speechSynthesis.onvoiceschanged=()=>Voice.pick(); }
+
+/* =====================================================================
+   STORAGE
+   ===================================================================== */
+const KEY='aura.routine.v2';
+let DB={days:[],settings:{voice:true,bells:true,drone:true,cues:true},mode:null,live:null};
+try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s){ DB={...DB,...s,settings:{...DB.settings,...(s.settings||{})}}; } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){} }
+const pad=n=>String(n).padStart(2,'0');
+const dayKey=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fmt=s=>{ s=Math.max(0,Math.ceil(s)); return `${Math.floor(s/60)}:${pad(s%60)}`; };
+
+/* =====================================================================
+   SESSION ENGINE
+   ===================================================================== */
+const $=id=>document.getElementById(id);
+const S={steps:[],idx:0,running:false,paused:false,t0:0,pauseEl:0,sched:[],li:0,lastKey:'',mode:'full',figFrom:null,figTo:null,figT:0,handT0:0};
+
+function buildSteps(mode){
+  return MODES[mode].steps.map(([id,dur,rounds])=>{
+    const st={id,...STEPS[id]};
+    if(id==='nadi'){ st.rounds=rounds; st.dur=NADI_INTRO+rounds*NADI_ROUND+NADI_OUTRO; } else st.dur=dur;
+    return st;
+  });
+}
+const totalOf=steps=>steps.reduce((a,s)=>a+s.dur,0);
+
+function schedule(st){
+  const out=[]; const plain=st.lines.filter(l=>typeof l==='string'); const W=Math.min(st.dur*.74, st.dur-20);
+  let i=0;
+  st.lines.forEach(l=>{
+    if(typeof l==='string'){ out.push({t:1.5+i*(W/plain.length),text:l}); i++; }
+    else out.push({t:l.at<0?st.dur+l.at:l.at,text:l.text});
+  });
+  return out.sort((a,b)=>a.t-b.t);
+}
+
+function breathAt(st,el){
+  if(!st.breath) return null; const pat=BREATH[st.breath];
+  let local=el, round=0;
+  if(st.breath==='nadi'){ local=el-NADI_INTRO; if(local<0||local>=st.rounds*NADI_ROUND) return null; round=Math.floor(local/NADI_ROUND); }
+  const cyc=pat.reduce((a,p)=>a+p[1],0); const n=Math.floor(local/cyc); let x=local-n*cyc;
+  for(let i=0;i<pat.length;i++){ const [ph,d,side]=pat[i]; if(x<d) return {ph,side:side||null,p:x/d,rem:d-x,key:`${n}-${i}`,round,i}; x-=d; }
+  return null;
+}
+function orbScale(b,t){
+  if(!b) return .64+.03*Math.sin(t*1.2);
+  if(b.ph==='in') return .52+.48*ease(b.p);
+  if(b.ph==='hold') return 1;
+  return 1-.48*ease(b.p);
+}
+
+function setColor(c){ document.documentElement.style.setProperty('--c',c); document.querySelector('meta[name=theme-color]').setAttribute('content','#07090F'); }
+
+function startSession(mode,idx=0,el=0){
+  Snd.init(); if(Voice.ok&&!Voice.v) Voice.pick();
+  S.mode=mode; S.steps=buildSteps(mode); S.running=true; S.paused=false;
+  $('home').hidden=true; $('done').hidden=true; $('session').hidden=false; window.scrollTo(0,0);
+  $('stepTot').textContent=S.steps.length;
+  $('segs').innerHTML=S.steps.map(s=>`<div class="seg" style="flex:${s.dur};--sc:${CH[s.ch].color}"><i></i></div>`).join('');
+  lockScreen();
+  if(DB.settings.bells){ Snd.chimes(7,.11); Snd.bowl(216,.24,10); }
+  S.figFrom=null;
+  startStep(idx,el,true);
+  if(DB.settings.voice) Voice.say(el>0?'Welcome back.':'Welcome. Let us begin.');
+}
+function startStep(i,el=0,first=false){
+  S.idx=i; const st=S.steps[i]; const ch=CH[st.ch];
+  S.t0=performance.now()-el*1000; S.pauseEl=el; S.sched=schedule(st); S.li=0; S.lastKey='';
+  while(S.li<S.sched.length && S.sched[S.li].t<el-.5) S.li++;
+  const passed=S.sched[S.li-1];
+  Voice.stop();
+  setColor(ch.color);
+  $('stepNo').textContent=i+1; $('stepTitle').textContent=st.title+(st.star?' ★':'');
+  $('stepCh').textContent=ch.label;
+  $('mantra').textContent=st.mantra||''; $('mantraRow').hidden=!st.mantra;
+  $('viz').textContent=st.viz||'';
+  $('teach').textContent= passed ? passed.text : (st.viz||'');
+  const nx=S.steps[i+1]; $('nextUp').innerHTML = nx ? `<span>Next</span><i style="background:${CH[nx.ch].color}"></i><span>${nx.title}</span>` : '<span>Last step</span>';
+  [...$('segs').children].forEach((s,k)=>s.firstChild.style.width = k<i?'100%':'0%');
+  const target=FIG.hands[st.fig];
+  S.figFrom = S.figCur ? S.figCur.map(p=>p.slice()) : target.map(p=>p.slice());
+  S.figTo=target.map(p=>p.slice()); S.figT=performance.now();
+  S.handT0=performance.now();
+  if(!first && DB.settings.bells){ Snd.bowl(ch.freq/2,.22,8); Snd.chimes(4,.08); }
+  if(DB.settings.drone) Snd.droneTo(ch.freq); else Snd.droneStop();
+  saveLive(true);
+}
+function nextStep(){ if(S.idx<S.steps.length-1) startStep(S.idx+1); else finish(); }
+function prevStep(){ const el=elapsed(); if(el>6||S.idx===0) startStep(S.idx); else startStep(S.idx-1); }
+function elapsed(){ return S.paused ? S.pauseEl : (performance.now()-S.t0)/1000; }
+function togglePause(){
+  if(!S.running) return;
+  if(S.paused){ S.paused=false; S.t0=performance.now()-S.pauseEl*1000; Snd.init(); if(DB.settings.drone) Snd.droneTo(CH[S.steps[S.idx].ch].freq); lockScreen(); }
+  else { S.pauseEl=elapsed(); S.paused=true; Voice.stop(); Snd.droneStop(1); }
+  $('playBtn').textContent = S.paused ? '▶' : '❚❚'; $('playBtn').setAttribute('aria-label', S.paused?'Resume':'Pause');
+  saveLive(true);
+}
+function endSession(){ S.running=false; Voice.stop(); Snd.droneStop(1.2); releaseLock(); DB.live=null; save(); showHome(); }
+function finish(){
+  S.running=false; Voice.stop(); Snd.droneStop(3); releaseLock();
+  if(DB.settings.bells){ Snd.bowl(216,.26,12); Snd.chimes(9,.1); }
+  setTimeout(()=>Voice.say('Your practice is complete. Namaste.'),900);
+  const k=dayKey(); if(!DB.days.includes(k)) DB.days.push(k); DB.live=null; save();
+  setColor('#D6B27A');
+  $('session').hidden=true; $('done').hidden=false; window.scrollTo(0,0);
+  const n=DB.days.length;
+  $('doneDots').innerHTML=dotsHTML();
+  $('doneSub').innerHTML = n<21 ? `Day <b>${n}</b> of 21 is complete. Your field is cleaner and steadier than when you sat down.<br>Carry this stillness into the day.` : (n<36 ? `Phase 1 is complete. Keep the same routine and notice how you feel. Phase 2 opens from day 36.` : `You are ready for Phase 2: expansion.`);
+}
+let lastLiveSave=0;
+function saveLive(force){
+  const now=performance.now(); if(!force && now-lastLiveSave<4000) return; lastLiveSave=now;
+  if(!S.running) return; DB.live={mode:S.mode,idx:S.idx,el:Math.floor(elapsed()),at:Date.now(),day:dayKey()}; save();
+}
+
+function onPhase(st,b){
+  if(DB.settings.cues) Snd.cue(b.ph);
+  if(st.breath==='nadi' && DB.settings.voice){
+    const w={in:'Inhale',hold:'Hold',out:'Exhale'}[b.ph] + (b.side? (b.side==='L'?' left':' right') : '');
+    Voice.stop(); Voice.say(w);
+  }
+}
+
+/* wake lock */
+let wl=null;
+async function lockScreen(){ try{ if('wakeLock' in navigator && document.visibilityState==='visible') wl=await navigator.wakeLock.request('screen'); }catch(e){} }
+function releaseLock(){ try{ wl&&wl.release(); }catch(e){} wl=null; }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&S.running&&!S.paused) lockScreen(); });
+
+/* =====================================================================
+   RENDER LOOP
+   ===================================================================== */
+let libPose=null, libT0=0;
+function handProgress(t0,now,cycles){
+  const C=5.4, T=(now-t0)/1000;
+  if(cycles!==Infinity && T>=(cycles-1)*C+2.3) return 1;
+  const t=T%C; if(t<.9) return 0; if(t<2.3) return (t-.9)/1.4; if(t<4.4) return 1; return 1-(t-4.4)/1;
+}
+function frame(now){
+  requestAnimationFrame(frame);
+  const tt=now/1000;
+  if(S.running && !$('session').hidden){
+    const st=S.steps[S.idx], ch=CH[st.ch], el=elapsed();
+    if(!S.paused){
+      while(S.li<S.sched.length && el>=S.sched[S.li].t){ const L=S.sched[S.li++]; showLine(L.text); }
+      const b0=breathAt(st,el); if(b0 && b0.key!==S.lastKey){ S.lastKey=b0.key; onPhase(st,b0); }
+      if(el>=st.dur){ nextStep(); return; }
+      saveLive(false);
+    }
+    const b=breathAt(st,el);
+    const sc=orbScale(b,tt); $('orb').style.transform=`scale(${sc.toFixed(3)})`;
+    const pulse=b ? (sc-.52)/.48 : .5+.5*Math.sin(tt*1.2);
+    let ph='Breathe', cnt='';
+    if(b){
+      if(b.ph==='in') ph='Inhale'; else if(b.ph==='hold') ph='Hold'; else ph=st.mantra?`Exhale · <em>${st.mantra}</em>`:'Exhale';
+      if(b.side) ph+=` · ${b.side==='L'?'left':'right'}`;
+      cnt = String(Math.ceil(b.rem)) + (st.breath==='nadi' ? ` · round ${b.round+1}/${st.rounds}` : '');
+    } else if(st.breath==='nadi'){ ph = el<NADI_INTRO ? 'Get ready' : 'Rest'; cnt=el<NADI_INTRO?`starts in ${Math.ceil(NADI_INTRO-el)}`:''; }
+    else if(!st.breath){ ph='Silence'; }
+    setHTML('phase',ph); setHTML('count',cnt);
+    const frac=Math.min(1,el/st.dur); $('ringP').setAttribute('stroke-dashoffset',(590.6*(1-frac)).toFixed(1));
+    setHTML('stepTime', fmt(st.dur-el));
+    const rest=S.steps.slice(S.idx+1).reduce((a,s)=>a+s.dur,0)+st.dur-el; setHTML('totLeft',`${fmt(rest)} left`);
+    const seg=$('segs').children[S.idx]; if(seg) seg.firstChild.style.width=(frac*100).toFixed(1)+'%';
+    // figure
+    const k=Math.min(1,(now-S.figT)/1400), e=ease(k);
+    S.figCur=S.figTo.map((p,i)=>[lerp(S.figFrom[i][0],p[0],e),lerp(S.figFrom[i][1],p[1],e)]);
+    $('figS').innerHTML=drawFig(S.figCur, ch.point, ch.color, pulse, 's');
+    // hands
+    if(st.pose==='nadi') $('handS').innerHTML=drawNadi(b, 'n', ch.color, tt);
+    else $('handS').innerHTML=drawPose(st.pose, handProgress(S.handT0,now,2), 'h', ch.color, pulse);
+  }
+  if(libPose && !$('veil').hidden){
+    const st=STEPS[libPose], ch=CH[st.ch]; const pulse=.5+.5*Math.sin(tt*1.4);
+    $('handL').innerHTML=drawPose(st.pose, handProgress(libT0,now,Infinity), 'l', ch.color, pulse);
+    $('figL').innerHTML=drawFig(FIG.hands[st.fig], ch.point, ch.color, pulse, 'lf');
+  }
+}
+const _html={};
+function setHTML(id,v){ if(_html[id]!==v){ _html[id]=v; $(id).innerHTML=v; } }
+function showLine(text){
+  const p=$('teach'); p.style.opacity=0;
+  setTimeout(()=>{ p.textContent=text; p.style.opacity=1; },350);
+  Voice.say(text);
+}
+
+/* =====================================================================
+   HOME
+   ===================================================================== */
+const WEEK=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function recommended(){ const d=new Date().getDay(); if(d===0) return {mode:'short',note:'Sunday is a rest day. A short session is optional.'}; if(d%2===1) return {mode:'full',note:`${WEEK[d]}: full session day.`}; return {mode:'short',note:`${WEEK[d]}: short session day (breath and lotus).`}; }
+function dotsHTML(){
+  const n=DB.days.length, done=DB.days.includes(dayKey());
+  let h=''; for(let i=0;i<21;i++){ const on=i<n; const today=!done && i===n; h+=`<i class="${on?'on':''} ${today?'today':''}"></i>`; } return h;
+}
+function showHome(){
+  $('session').hidden=true; $('done').hidden=true; $('home').hidden=false; setColor('#D6B27A'); window.scrollTo(0,0);
+  const n=DB.days.length, done=DB.days.includes(dayKey()), rec=recommended();
+  $('todayName').textContent=WEEK[new Date().getDay()];
+  $('dayBig').innerHTML = done ? `Day <span>${n}</span> done` : `Day <span>${Math.min(n+1,99)}</span>`;
+  $('dayCount').textContent = n>=21 ? 'Phase 1 complete' : `${n} of 21 complete`;
+  $('dots').innerHTML=dotsHTML();
+  let note = done ? 'Today is complete. You can practice again anytime.' : rec.note;
+  if(n>=21 && n<36) note+=' Days 22 to 35: keep the routine and observe. Phase 2 opens on day 36.';
+  if(n>=36) note+=' You are ready for Phase 2.';
+  $('dayNote').textContent=note;
+  if(!S.modePicked){ S.mode = DB.mode || rec.mode; }
+  renderModes(rec.mode);
+  const L=DB.live;
+  if(L && Date.now()-L.at<3*3600e3 && MODES[L.mode]){ const st=buildSteps(L.mode)[L.idx]; $('resumeBtn').hidden=false; $('resumeBtn').textContent=`Resume: ${st.title} (step ${L.idx+1})`; }
+  else $('resumeBtn').hidden=true;
+}
+function renderModes(rec){
+  $('modes').innerHTML=Object.entries(MODES).map(([k,m])=>{ const t=Math.round(totalOf(buildSteps(k))/60); return `<button class="mode ${S.mode===k?'on':''}" role="radio" aria-checked="${S.mode===k}" data-m="${k}"><span class="rec">${k===rec?'Today':''}</span><b>${m.label}</b><small>${t} min</small></button>`; }).join('');
+  $('seq').innerHTML=buildSteps(S.mode).map(s=>`<span class="chip"><i style="background:${CH[s.ch].color}"></i>${s.title.replace(' Mudra','')}</span>`).join('');
+}
+$('modes').addEventListener('click',e=>{ const b=e.target.closest('.mode'); if(!b) return; S.mode=b.dataset.m; S.modePicked=true; DB.mode=S.mode; save(); renderModes(recommended().mode); });
+
+function renderLib(){
+  $('lib').innerHTML=LIB.map((id,i)=>{ const st=STEPS[id], ch=CH[st.ch]; return `<button class="tile" data-id="${id}" style="--tc:${ch.color}"><svg viewBox="0 0 300 230" aria-hidden="true">${drawPose(st.pose,1,'t'+i,ch.color,.6)}</svg><b>${st.title}</b><small><i style="background:${ch.color}"></i>${ch.label.split(' · ')[0]}${st.mantra?' · '+st.mantra:''}</small></button>`; }).join('');
+}
+$('lib').addEventListener('click',e=>{ const b=e.target.closest('.tile'); if(b) openSheet(b.dataset.id); });
+function openSheet(id){
+  Snd.init();
+  const st=STEPS[id], ch=CH[st.ch]; libPose=id; libT0=performance.now();
+  const sh=document.querySelector('.sheet'); sh.style.setProperty('--tc',ch.color);
+  $('shCh').textContent=ch.label; $('shTitle').textContent=st.title;
+  const pos={knees:'On the knees',lap:'In the lap',navel:'Navel height',heart:'At the heart',throat:'At the throat',forehead:'At the forehead',above:'Above the head',chest:'At the heart'}[st.fig];
+  $('shFacts').innerHTML=`<div class="fact"><small>Mantra</small><b>${st.mantra||'Silence'}</b></div><div class="fact"><small>Hold</small><b>${id==='padma'?'5 min':id==='anjali'?'2 min':'3 min'}</b></div><div class="fact"><small>Hands</small><b style="font-size:15px">${pos}</b></div>`;
+  $('shHow').innerHTML=st.how.map(h=>`<li>${h}</li>`).join('');
+  $('shIntent').textContent= st.intent ? `“${st.intent}”` : '';
+  $('shSound').onclick=()=>{ Snd.init(); Snd.bowl(ch.freq/2,.24,8); Snd.chimes(3,.07); };
+  $('veil').hidden=false;
+}
+$('shClose').onclick=()=>{ $('veil').hidden=true; libPose=null; };
+$('veil').addEventListener('click',e=>{ if(e.target.id==='veil'){ $('veil').hidden=true; libPose=null; } });
+
+const SETS=[
+  ['voice','Voice guide','A calm voice reads each instruction and the breathing cues.'],
+  ['bells','Bells and singing bowl','Bowl and chimes at the start and at every mudra change.'],
+  ['drone','Ambient tone','A soft tone tuned to each chakra plays under the session.'],
+  ['cues','Breath chimes','A tiny bell on every inhale and exhale, so you can keep your eyes closed.'],
+];
+function renderSettings(){
+  $('settings').innerHTML=SETS.map(([k,t,d])=>`<div class="row"><div class="t"><b>${t}</b><small>${d}</small></div><button class="sw" role="switch" aria-label="${t}" aria-checked="${!!DB.settings[k]}" data-k="${k}"></button></div>`).join('')
+   + `<div class="row"><div class="t"><b>Test sound</b><small>No sound? Turn up the volume and check the silent switch.</small></div><button class="test" id="testBtn">Play</button></div>`;
+}
+$('settings').addEventListener('click',e=>{
+  const s=e.target.closest('.sw');
+  if(s){ const k=s.dataset.k; DB.settings[k]=!DB.settings[k]; save(); s.setAttribute('aria-checked',DB.settings[k]); return; }
+  if(e.target.id==='testBtn'){ Snd.init(); Snd.bowl(216,.24,7); Snd.chimes(5,.1); if(DB.settings.voice) setTimeout(()=>Voice.say('Welcome. Sit comfortably and close your eyes.',true),500); }
 });
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-let currentStep = 0;
-let timeLeft = 0;
-let totalTime = 0;
-let isPaused = false;
-let timer = null;
-let instructionIndex = 0;
-let instructionTimer = null;
-let totalSessionTime = steps.reduce((a, s) => a + s.duration, 0);
-let elapsedTotal = 0;
+$('beginBtn').onclick=()=>{ DB.live=null; save(); if(Voice.ok&&DB.settings.voice){ Voice.stop(); } startSession(S.mode); };
+$('resumeBtn').onclick=()=>{ const L=DB.live; if(!L) return; startSession(L.mode,L.idx,L.el); };
+$('playBtn').onclick=togglePause;
+$('nextBtn').onclick=()=>{ if(S.paused) togglePause(); nextStep(); };
+$('prevBtn').onclick=()=>{ if(S.paused) togglePause(); prevStep(); };
+$('replayBtn').onclick=()=>{ S.handT0=performance.now(); };
+$('homeBtn').onclick=showHome;
+$('muteBtn').onclick=()=>{ DB.settings.voice=!DB.settings.voice; save(); $('muteBtn').textContent=DB.settings.voice?'🔊':'🔇'; if(!DB.settings.voice) Voice.stop(); renderSettings(); };
+let endArmed=0;
+$('endBtn').onclick=()=>{
+  if(Date.now()-endArmed<3000){ endSession(); $('endHint').textContent=''; return; }
+  endArmed=Date.now(); $('endHint').textContent='Tap ✕ again to end the session';
+  setTimeout(()=>{ if(Date.now()-endArmed>=2900) $('endHint').textContent=''; },3000);
+};
 
-// ── STARS ─────────────────────────────────────────────────────────────────────
-function createStars() {
-  const container = document.getElementById('stars');
-  for (let i = 0; i < 80; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.left = Math.random() * 100 + '%';
-    star.style.top = Math.random() * 100 + '%';
-    star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-    star.style.setProperty('--op', (0.1 + Math.random() * 0.4).toFixed(2));
-    star.style.animationDelay = (Math.random() * 4) + 's';
-    if (Math.random() > 0.7) { star.style.width = '3px'; star.style.height = '3px'; }
-    container.appendChild(star);
-  }
-}
+/* stars */
+(function(){ const c=$('stars'); for(let i=0;i<70;i++){ const s=document.createElement('div'); s.className='star'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*70+'%'; s.style.animationDelay=(Math.random()*4)+'s'; s.style.opacity=(.1+Math.random()*.35).toFixed(2); c.appendChild(s);} })();
 
-// ── GONG ──────────────────────────────────────────────────────────────────────
-function playGong() {
-  const overlay = document.getElementById('gong-overlay');
-  overlay.style.opacity = '1';
-  overlay.innerHTML = '<div class="gong-ring"></div>';
-  setTimeout(() => { overlay.style.opacity = '0'; }, 1500);
-
-  // Web Audio gong sound
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(180, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 2);
-    gain.gain.setValueAtTime(0.4, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 3);
-  } catch(e) {}
-}
-
-// ── FORMAT TIME ───────────────────────────────────────────────────────────────
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return m + ':' + (sec < 10 ? '0' : '') + sec;
-}
-
-// ── UPDATE UI ─────────────────────────────────────────────────────────────────
-function updateUI() {
-  const step = steps[currentStep];
-
-  // Ambient
-  document.getElementById('ambient').style.setProperty('--glow-color', step.glowColor);
-  document.querySelector('.ambient').style.background = '';
-
-  // Timer
-  document.getElementById('timer-display').textContent = formatTime(timeLeft);
-
-  // Circle progress
-  const pct = 1 - (timeLeft / totalTime);
-  const circ = 2 * Math.PI * 90;
-  document.getElementById('circle-progress').style.strokeDashoffset = circ - (pct * circ);
-  document.getElementById('circle-progress').style.stroke = step.chakraColor;
-
-  // Step indicator
-  document.getElementById('step-indicator').textContent = `Step ${currentStep + 1} of ${steps.length}`;
-
-  // Progress bar
-  const totalElapsed = steps.slice(0, currentStep).reduce((a, s) => a + s.duration, 0) + (totalTime - timeLeft);
-  const pctTotal = (totalElapsed / totalSessionTime) * 100;
-  document.getElementById('progress-fill').style.width = pctTotal + '%';
-
-  // Chakra badge
-  document.getElementById('chakra-dot').style.background = step.chakraColor;
-  document.getElementById('chakra-dot').style.boxShadow = `0 0 8px ${step.chakraColor}`;
-  document.getElementById('chakra-name').textContent = step.chakra;
-
-  // Instruction card
-  document.getElementById('step-title').textContent = step.title;
-  document.getElementById('step-subtitle').textContent = step.subtitle;
-  document.querySelector('.instruction-card').style.setProperty('--line-color', step.lineColor);
-
-  // Mantra
-  const mantraEl = document.getElementById('mantra-display');
-  if (step.mantra) {
-    mantraEl.style.display = 'block';
-    document.getElementById('mantra-word').textContent = step.mantra;
-    document.getElementById('mantra-word').style.color = step.chakraColor;
-  } else {
-    mantraEl.style.display = 'none';
-  }
-
-  // Visualize
-  const vizEl = document.getElementById('visualize-pill');
-  if (step.visualize) {
-    vizEl.style.display = 'inline-flex';
-    document.getElementById('visualize-text').textContent = step.visualize;
-    document.getElementById('visualize-dot').style.background = step.chakraColor;
-    document.getElementById('visualize-dot').style.boxShadow = `0 0 6px ${step.chakraColor}`;
-  } else {
-    vizEl.style.display = 'none';
-  }
-
-  // Next preview
-  if (currentStep < steps.length - 1) {
-    document.getElementById('next-text').textContent = steps[currentStep + 1].title;
-    document.getElementById('next-preview').style.display = 'flex';
-  } else {
-    document.getElementById('next-preview').style.display = 'none';
-  }
-}
-
-function cycleInstruction() {
-  const step = steps[currentStep];
-  const el = document.getElementById('instruction-text');
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.textContent = step.instructions[instructionIndex % step.instructions.length];
-    el.style.opacity = '1';
-    instructionIndex++;
-  }, 500);
-}
-
-// ── SESSION CONTROL ───────────────────────────────────────────────────────────
-function startStep(index) {
-  clearInterval(timer);
-  clearInterval(instructionTimer);
-  currentStep = index;
-  const step = steps[index];
-  timeLeft = step.duration;
-  totalTime = step.duration;
-  instructionIndex = 0;
-
-  updateUI();
-  cycleInstruction();
-
-  const instrInterval = Math.max(5000, Math.floor(step.duration / step.instructions.length) * 1000);
-  instructionTimer = setInterval(cycleInstruction, instrInterval);
-
-  timer = setInterval(() => {
-    if (!isPaused) {
-      timeLeft--;
-      updateUI();
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        clearInterval(instructionTimer);
-        playGong();
-        setTimeout(() => {
-          if (currentStep < steps.length - 1) {
-            startStep(currentStep + 1);
-          } else {
-            showComplete();
-          }
-        }, 1800);
-      }
-    }
-  }, 1000);
-}
-
-function startSession() {
-  document.getElementById('start-screen').style.display = 'none';
-  document.getElementById('session-screen').style.display = 'flex';
-  startStep(0);
-}
-
-function togglePause() {
-  isPaused = !isPaused;
-  document.getElementById('play-btn').innerHTML = isPaused ? '&#9654;' : '&#9646;&#9646;';
-}
-
-function nextStep() {
-  if (currentStep < steps.length - 1) {
-    playGong();
-    setTimeout(() => startStep(currentStep + 1), 500);
-  }
-}
-
-function prevStep() {
-  if (currentStep > 0) {
-    startStep(currentStep - 1);
-  }
-}
-
-function showComplete() {
-  document.getElementById('session-screen').style.display = 'none';
-  const c = document.getElementById('complete-screen');
-  c.style.display = 'flex';
-}
-
-function restart() {
-  document.getElementById('complete-screen').style.display = 'none';
-  document.getElementById('session-screen').style.display = 'flex';
-  startStep(0);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-createStars();
+$('muteBtn').textContent=DB.settings.voice?'🔊':'🔇';
+renderSettings(); renderLib(); showHome();
+requestAnimationFrame(frame);
+window.__aura={drawPose,drawNadi,drawFig,FIG,STEPS,CH,startSession,startStep,S};
 </script>
 </body>
 </html>
